@@ -9,21 +9,23 @@ class DownstreamContext implements Context {
 
     private final List<DownstreamTriggerContext> triggers = []
 
-    def trigger(String projects, Closure downstreamTriggerClosure = null) {
+    def trigger(String projects, @DelegatesTo(DownstreamTriggerContext) Closure downstreamTriggerClosure = null) {
         trigger(projects, null, downstreamTriggerClosure)
     }
 
-    def trigger(String projects, String condition, Closure downstreamTriggerClosure = null) {
+    def trigger(String projects, String condition,
+                @DelegatesTo(DownstreamTriggerContext) Closure downstreamTriggerClosure = null) {
         trigger(projects, condition, false, downstreamTriggerClosure)
     }
 
     def trigger(String projects, String condition, boolean triggerWithNoParameters,
-                Closure downstreamTriggerClosure = null) {
+                @DelegatesTo(DownstreamTriggerContext) Closure downstreamTriggerClosure = null) {
         trigger(projects, condition, triggerWithNoParameters, [:], downstreamTriggerClosure)
     }
 
     def trigger(String projects, String condition, boolean triggerWithNoParameters,
-                Map<String, String> blockingThresholds, Closure downstreamTriggerClosure = null) {
+                Map<String, String> blockingThresholds,
+                @DelegatesTo(DownstreamTriggerContext) Closure downstreamTriggerClosure = null) {
         DownstreamTriggerContext downstreamTriggerContext = new DownstreamTriggerContext()
         downstreamTriggerContext.projects = projects
         downstreamTriggerContext.condition = condition ?: 'SUCCESS'

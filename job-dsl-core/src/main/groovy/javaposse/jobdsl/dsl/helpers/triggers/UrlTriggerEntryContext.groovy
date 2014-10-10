@@ -108,7 +108,7 @@ class UrlTriggerEntryContext implements Context {
      * @param inspectionClosure for configuring RegExps/Path expressions for xml, text and json
      * @return
      */
-    def inspection(String type, Closure inspectionClosure = null) {
+    def inspection(String type, @DelegatesTo(UrlTriggerInspectionContext) Closure inspectionClosure = null) {
         Inspection itype
         try {
             itype = Preconditions.checkNotNull(Inspection.valueOf(type), 'Inspection must not be null' as Object)

@@ -221,7 +221,7 @@ class BuildParametersContext implements Context {
      * @param description (optional)
      * @return
      */
-    def nodeParam(String parameterName, Closure nodeParamClosure = null) {
+    def nodeParam(String parameterName, @DelegatesTo(NodeParamContext) Closure nodeParamClosure = null) {
         checkArgument(!buildParameterNodes.containsKey(parameterName), 'parameter $parameterName already defined')
         checkNotNull(parameterName, 'parameterName cannot be null')
         checkArgument(parameterName.length() > 0)

@@ -15,7 +15,7 @@ class S3BucketPublisherContext implements Context {
     List<Node> entries = []
     List<Node> metadata = []
 
-    void entry(String source, String bucketName, String region, Closure closure = null) {
+    void entry(String source, String bucketName, String region, @DelegatesTo(S3EntryContext) Closure closure = null) {
         checkArgument(!isNullOrEmpty(source), 'source must be specified')
         checkArgument(!isNullOrEmpty(bucketName), 'bucket must be specified')
         checkArgument(REGIONS.contains(region), "region must be one of ${REGIONS.join(', ')}")

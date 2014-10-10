@@ -117,7 +117,7 @@ class StepContext implements Context {
      *     <removedJobAction>IGNORE</removedJobAction>
      * </javaposse.jobdsl.plugin.ExecuteDslScripts>
      */
-    def dsl(Closure configure = null) {
+    def dsl(@DelegatesTo(DslContext) Closure configure = null) {
         DslContext context = new DslContext()
         ContextHelper.executeInContext(configure, context)
         buildDslNode(context)
@@ -170,19 +170,20 @@ class StepContext implements Context {
      *     </properties>
      * </hudson.tasks.Ant>
      */
-    def ant(Closure antClosure = null) {
+    def ant(@DelegatesTo(AntContext) Closure antClosure = null) {
         ant(null, null, null, antClosure)
     }
 
-    def ant(String targetsStr, Closure antClosure = null) {
+    def ant(String targetsStr, @DelegatesTo(AntContext) Closure antClosure = null) {
         ant(targetsStr, null, null, antClosure)
     }
 
-    def ant(String targetsStr, String buildFileStr, Closure antClosure = null) {
+    def ant(String targetsStr, String buildFileStr, @DelegatesTo(AntContext) Closure antClosure = null) {
         ant(targetsStr, buildFileStr, null, antClosure)
     }
 
-    def ant(String targetsArg, String buildFileArg, String antInstallation, Closure antClosure = null) {
+    def ant(String targetsArg, String buildFileArg, String antInstallation,
+            @DelegatesTo(AntContext) Closure antClosure = null) {
         AntContext antContext = new AntContext()
         ContextHelper.executeInContext(antClosure, antContext)
 
@@ -233,11 +234,11 @@ class StepContext implements Context {
      *     <classPath/>
      * </hudson.plugins.groovy.Groovy>
      */
-    def groovyCommand(String command, Closure groovyClosure = null) {
+    def groovyCommand(String command, @DelegatesTo(GroovyContext) Closure groovyClosure = null) {
         groovy(command, true, null, groovyClosure)
     }
 
-    def groovyCommand(String command, String groovyName, Closure groovyClosure = null) {
+    def groovyCommand(String command, String groovyName, @DelegatesTo(GroovyContext) Closure groovyClosure = null) {
         groovy(command, true, groovyName, groovyClosure)
     }
 
@@ -254,11 +255,11 @@ class StepContext implements Context {
      *     <classPath/>
      * </hudson.plugins.groovy.Groovy>
      */
-    def groovyScriptFile(String fileName, Closure groovyClosure = null) {
+    def groovyScriptFile(String fileName, @DelegatesTo(GroovyContext) Closure groovyClosure = null) {
         groovy(fileName, false, null, groovyClosure)
     }
 
-    def groovyScriptFile(String fileName, String groovyName, Closure groovyClosure = null) {
+    def groovyScriptFile(String fileName, String groovyName, @DelegatesTo(GroovyContext) Closure groovyClosure = null) {
         groovy(fileName, false, groovyName, groovyClosure)
     }
 
@@ -299,7 +300,7 @@ class StepContext implements Context {
      *     <classpath/>
      * </hudson.plugins.groovy.SystemGroovy>
      */
-    def systemGroovyCommand(String command, Closure systemGroovyClosure = null) {
+    def systemGroovyCommand(String command, @DelegatesTo(SystemGroovyContext) Closure systemGroovyClosure = null) {
         systemGroovy(command, true, systemGroovyClosure)
     }
 
@@ -312,7 +313,7 @@ class StepContext implements Context {
      *     <classpath/>
      * </hudson.plugins.groovy.SystemGroovy>
      */
-    def systemGroovyScriptFile(String fileName, Closure systemGroovyClosure = null) {
+    def systemGroovyScriptFile(String fileName, @DelegatesTo(SystemGroovyContext) Closure systemGroovyClosure = null) {
         systemGroovy(fileName, false, systemGroovyClosure)
     }
 
@@ -338,7 +339,7 @@ class StepContext implements Context {
      *     <usePrivateRepository>false</usePrivateRepository>
      * </hudson.tasks.Maven>
      */
-    def maven(Closure closure) {
+    def maven(@DelegatesTo(MavenContext) Closure closure) {
         MavenContext mavenContext = new MavenContext(jobManagement)
         ContextHelper.executeInContext(closure, mavenContext)
 
@@ -391,15 +392,16 @@ class StepContext implements Context {
      *     <useWrapper>false</useWrapper>
      * </com.g2one.hudson.grails.GrailsBuilder>
      */
-    def grails(Closure grailsClosure) {
+    def grails(@DelegatesTo(GrailsContext) Closure grailsClosure) {
         grails null, false, grailsClosure
     }
 
-    def grails(String targetsArg, Closure grailsClosure) {
+    def grails(String targetsArg, @DelegatesTo(GrailsContext) Closure grailsClosure) {
         grails targetsArg, false, grailsClosure
     }
 
-    def grails(String targetsArg = null, boolean useWrapperArg = false, Closure grailsClosure = null) {
+    def grails(String targetsArg = null, boolean useWrapperArg = false,
+               @DelegatesTo(GrailsContext) Closure grailsClosure = null) {
         GrailsContext grailsContext = new GrailsContext(
             useWrapper: useWrapperArg
         )
@@ -476,21 +478,23 @@ class StepContext implements Context {
      *     </selector>
      * </hudson.plugins.copyartifact.CopyArtifact>
      */
-    def copyArtifacts(String jobName, String includeGlob, Closure copyArtifactClosure) {
+    def copyArtifacts(String jobName, String includeGlob,
+                      @DelegatesTo(CopyArtifactContext) Closure copyArtifactClosure) {
         copyArtifacts(jobName, includeGlob, '', copyArtifactClosure)
     }
 
-    def copyArtifacts(String jobName, String includeGlob, String targetPath, Closure copyArtifactClosure) {
+    def copyArtifacts(String jobName, String includeGlob, String targetPath,
+                      @DelegatesTo(CopyArtifactContext) Closure copyArtifactClosure) {
         copyArtifacts(jobName, includeGlob, targetPath, false, copyArtifactClosure)
     }
 
     def copyArtifacts(String jobName, String includeGlob, String targetPath = '', boolean flattenFiles,
-                      Closure copyArtifactClosure) {
+                      @DelegatesTo(CopyArtifactContext) Closure copyArtifactClosure) {
         copyArtifacts(jobName, includeGlob, targetPath, flattenFiles, false, copyArtifactClosure)
     }
 
     def copyArtifacts(String jobName, String includeGlob, String targetPath = '', boolean flattenFiles,
-                      boolean optionalAllowed, Closure copyArtifactClosure) {
+                      boolean optionalAllowed, @DelegatesTo(CopyArtifactContext) Closure copyArtifactClosure) {
         CopyArtifactContext copyArtifactContext = new CopyArtifactContext()
         ContextHelper.executeInContext(copyArtifactClosure, copyArtifactContext)
 
@@ -553,15 +557,15 @@ class StepContext implements Context {
      *   <continuationCondition>COMPLETED</continuationCondition>
      * </com.tikal.jenkins.plugins.multijob.MultiJobBuilder>
      */
-    def phase(Closure phaseContext) {
+    def phase(@DelegatesTo(PhaseContext) Closure phaseContext) {
         phase(null, 'SUCCESSFUL', phaseContext)
     }
 
-    def phase(String phaseName, Closure phaseContext = null) {
+    def phase(String phaseName, @DelegatesTo(PhaseContext) Closure phaseContext = null) {
         phase(phaseName, 'SUCCESSFUL', phaseContext)
     }
 
-    def phase(String name, String continuationConditionArg, Closure phaseClosure) {
+    def phase(String name, String continuationConditionArg, @DelegatesTo(PhaseContext) Closure phaseClosure) {
         PhaseContext phaseContext = new PhaseContext(jobManagement, name, continuationConditionArg)
         ContextHelper.executeInContext(phaseClosure, phaseContext)
 
@@ -661,7 +665,7 @@ class StepContext implements Context {
      *     </configs>
      * </hudson.plugins.parameterizedtrigger.TriggerBuilder>
      */
-    def downstreamParameterized(Closure downstreamClosure) {
+    def downstreamParameterized(@DelegatesTo(DownstreamContext) Closure downstreamClosure) {
         DownstreamContext downstreamContext = new DownstreamContext()
         ContextHelper.executeInContext(downstreamClosure, downstreamContext)
 
@@ -681,7 +685,7 @@ class StepContext implements Context {
      *     <runner class="org.jenkins_ci.plugins.run_condition.BuildStepRunner$Fail"/>
      * </org.jenkinsci.plugins.conditionalbuildstep.singlestep.SingleConditionalBuilder>
      */
-    def conditionalSteps(Closure conditionalStepsClosure) {
+    def conditionalSteps(@DelegatesTo(ConditionalStepsContext) Closure conditionalStepsClosure) {
         ConditionalStepsContext conditionalStepsContext = new ConditionalStepsContext(jobManagement)
         ContextHelper.executeInContext(conditionalStepsClosure, conditionalStepsContext)
 
@@ -700,7 +704,7 @@ class StepContext implements Context {
      *     </info>
      * </EnvInjectBuilder>
      */
-    def environmentVariables(Closure envClosure) {
+    def environmentVariables(@DelegatesTo(StepEnvironmentVariableContext) Closure envClosure) {
         StepEnvironmentVariableContext envContext = new StepEnvironmentVariableContext()
         ContextHelper.executeInContext(envClosure, envContext)
 
@@ -738,7 +742,8 @@ class StepContext implements Context {
      *     <queryString/>
      * </org.jenkinsci.plugins.ParameterizedRemoteTrigger.RemoteBuildConfiguration>
      */
-    def remoteTrigger(String remoteJenkins, String jobName, Closure closure = null) {
+    def remoteTrigger(String remoteJenkins, String jobName,
+                      @DelegatesTo(ParameterizedRemoteTriggerContext) Closure closure = null) {
         Preconditions.checkArgument(!isNullOrEmpty(remoteJenkins), 'remoteJenkins must be specified')
         Preconditions.checkArgument(!isNullOrEmpty(jobName), 'jobName must be specified')
 
@@ -784,7 +789,7 @@ class StepContext implements Context {
      * ...
      * <org.jvnet.hudson.plugins.exclusion.CriticalBlockEnd/>
      */
-    def criticalBlock(Closure closure) {
+    def criticalBlock(@DelegatesTo(StepContext) Closure closure) {
         StepContext stepContext = new StepContext(jobManagement)
         ContextHelper.executeInContext(closure, stepContext)
 
@@ -804,11 +809,11 @@ class StepContext implements Context {
      *     <bundleExec>false</bundleExec>
      * </hudson.plugins.rake.Rake>
      */
-    def rake(Closure rakeClosure = null) {
+    def rake(@DelegatesTo(RakeContext) Closure rakeClosure = null) {
         rake(null, rakeClosure)
     }
 
-    def rake(String tasksArg, Closure rakeClosure = null) {
+    def rake(String tasksArg, @DelegatesTo(RakeContext) Closure rakeClosure = null) {
         RakeContext rakeContext = new RakeContext()
 
         if (tasksArg) {

@@ -23,7 +23,8 @@ class NotificationContext implements Context {
         endpoint(url, protocol, format, null)
     }
 
-    void endpoint(String url, String protocol = 'HTTP', String format = 'JSON', Closure notificationEndpointClosure) {
+    void endpoint(String url, String protocol = 'HTTP', String format = 'JSON',
+                  @DelegatesTo(NotificationEndpointContext) Closure notificationEndpointClosure) {
         checkArgument(!isNullOrEmpty(url), 'url must be specified')
         checkArgument(PROTOCOLS.contains(protocol), "protocol must be one of ${PROTOCOLS.join(', ')}")
         checkArgument(FORMATS.contains(format), "format must be one of ${FORMATS.join(', ')}")

@@ -34,7 +34,7 @@ class UrlTriggerContext implements Context {
     }
 
     /** adds a monitored URL to the trigger. */
-    def url(String url, Closure entryClosure = null) {
+    def url(String url, @DelegatesTo(UrlTriggerEntryContext) Closure entryClosure = null) {
         UrlTriggerEntryContext entryContext = new UrlTriggerEntryContext(url)
         ContextHelper.executeInContext(entryClosure, entryContext)
         entries << entryContext

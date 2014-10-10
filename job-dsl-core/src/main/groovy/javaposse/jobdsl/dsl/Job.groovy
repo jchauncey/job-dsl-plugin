@@ -93,11 +93,12 @@ class Job extends Item {
      *       <contributors/>
      *     </EnvInjectJobProperty>
      */
-    def environmentVariables(Closure envClosure) {
+    def environmentVariables(@DelegatesTo(EnvironmentVariableContext) Closure envClosure) {
         environmentVariables(null, envClosure)
     }
 
-    def environmentVariables(Map<Object, Object> vars, Closure envClosure = null) {
+    def environmentVariables(Map<Object, Object> vars,
+                             @DelegatesTo(EnvironmentVariableContext) Closure envClosure = null) {
         EnvironmentVariableContext envContext = new EnvironmentVariableContext()
         if (vars) {
             envContext.envs(vars)
@@ -130,7 +131,7 @@ class Job extends Item {
      *     <properties>
      * </project>
      */
-    def throttleConcurrentBuilds(Closure throttleClosure) {
+    def throttleConcurrentBuilds(@DelegatesTo(ThrottleConcurrentBuildsContext) Closure throttleClosure) {
         ThrottleConcurrentBuildsContext throttleContext = new ThrottleConcurrentBuildsContext()
         ContextHelper.executeInContext(throttleClosure, throttleContext)
 
@@ -164,7 +165,7 @@ class Job extends Item {
      *     <properties>
      * </project>
      */
-    def lockableResources(String resources, Closure lockClosure = null) {
+    def lockableResources(String resources, @DelegatesTo(LockableResourcesContext) Closure lockClosure = null) {
         LockableResourcesContext lockContext = new LockableResourcesContext()
         ContextHelper.executeInContext(lockClosure, lockContext)
 
@@ -376,7 +377,7 @@ class Job extends Item {
      *     </com.tikal.hudson.plugins.notification.HudsonNotificationProperty>
      * </properties>
      */
-    def notifications(Closure notificationClosure) {
+    def notifications(@DelegatesTo(NotificationContext) Closure notificationClosure) {
         NotificationContext notificationContext = new NotificationContext(jobManagement)
         ContextHelper.executeInContext(notificationClosure, notificationContext)
 
@@ -432,7 +433,7 @@ class Job extends Item {
         }
     }
 
-    def authorization(Closure closure) {
+    def authorization(@DelegatesTo(AuthorizationContext) Closure closure) {
         AuthorizationContext context = new AuthorizationContext()
         ContextHelper.executeInContext(closure, context)
 
@@ -471,7 +472,7 @@ class Job extends Item {
         }
     }
 
-    def parameters(Closure closure) {
+    def parameters(@DelegatesTo(BuildParametersContext) Closure closure) {
         BuildParametersContext context = new BuildParametersContext()
         ContextHelper.executeInContext(closure, context)
 
@@ -483,7 +484,7 @@ class Job extends Item {
         }
     }
 
-    def scm(Closure closure) {
+    def scm(@DelegatesTo(ScmContext) Closure closure) {
         ScmContext context = new ScmContext(false, withXmlActions, jobManagement)
         ContextHelper.executeInContext(closure, context)
 
@@ -499,7 +500,7 @@ class Job extends Item {
         }
     }
 
-    def multiscm(Closure closure) {
+    def multiscm(@DelegatesTo(ScmContext) Closure closure) {
         ScmContext context = new ScmContext(true, withXmlActions, jobManagement)
         ContextHelper.executeInContext(closure, context)
 
@@ -521,7 +522,7 @@ class Job extends Item {
         }
     }
 
-    def triggers(Closure closure) {
+    def triggers(@DelegatesTo(TriggerContext) Closure closure) {
         TriggerContext context = new TriggerContext(withXmlActions, type, jobManagement)
         ContextHelper.executeInContext(closure, context)
 
@@ -532,7 +533,7 @@ class Job extends Item {
         }
     }
 
-    def wrappers(Closure closure) {
+    def wrappers(@DelegatesTo(WrapperContext) Closure closure) {
         WrapperContext context = new WrapperContext(type, jobManagement)
         ContextHelper.executeInContext(closure, context)
 
@@ -543,7 +544,7 @@ class Job extends Item {
         }
     }
 
-    def steps(Closure closure) {
+    def steps(@DelegatesTo(StepContext) Closure closure) {
         Preconditions.checkState(type != JobType.Maven, 'steps cannot be applied for Maven jobs')
 
         StepContext context = new StepContext(jobManagement)
@@ -556,7 +557,7 @@ class Job extends Item {
         }
     }
 
-    def publishers(Closure closure) {
+    def publishers(@DelegatesTo(PublisherContext) Closure closure) {
         PublisherContext context = new PublisherContext(jobManagement)
         ContextHelper.executeInContext(closure, context)
 
@@ -575,7 +576,7 @@ class Job extends Item {
         }
     }
 
-    def axes(Closure closure) {
+    def axes(@DelegatesTo(AxisContext) Closure closure) {
         Preconditions.checkState(type == JobType.Matrix, 'axes can only be applied for Matrix jobs')
 
         AxisContext context = new AxisContext()
@@ -743,7 +744,7 @@ class Job extends Item {
         }
     }
 
-    def preBuildSteps(Closure preBuildClosure) {
+    def preBuildSteps(@DelegatesTo(StepContext) Closure preBuildClosure) {
         Preconditions.checkState(type == JobType.Maven, 'prebuildSteps can only be applied for Maven jobs')
 
         StepContext preBuildContext = new StepContext(jobManagement)
@@ -756,7 +757,7 @@ class Job extends Item {
         }
     }
 
-    def postBuildSteps(Closure postBuildClosure) {
+    def postBuildSteps(@DelegatesTo(StepContext) Closure postBuildClosure) {
         Preconditions.checkState(type == JobType.Maven, 'postBuildSteps can only be applied for Maven jobs')
 
         StepContext postBuildContext = new StepContext(jobManagement)

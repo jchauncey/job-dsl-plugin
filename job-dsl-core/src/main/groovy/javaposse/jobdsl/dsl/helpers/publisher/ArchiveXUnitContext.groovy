@@ -10,11 +10,11 @@ class ArchiveXUnitContext implements Context {
     int timeMargin = 3000
     List<ArchiveXUnitResultFileContext> resultFiles = []
 
-    void failedThresholds(Closure thresholdsClosure) {
+    void failedThresholds(@DelegatesTo(ArchiveXUnitThresholdContext) Closure thresholdsClosure) {
         ContextHelper.executeInContext(thresholdsClosure, failedThresholdsContext)
     }
 
-    void skippedThresholds(Closure thresholdsClosure) {
+    void skippedThresholds(@DelegatesTo(ArchiveXUnitThresholdContext) Closure thresholdsClosure) {
         ContextHelper.executeInContext(thresholdsClosure, skippedThresholdsContext)
     }
 
@@ -26,75 +26,75 @@ class ArchiveXUnitContext implements Context {
         this.timeMargin = timeMargin
     }
 
-    void aUnit(Closure resultFileClosure) {
+    void aUnit(@DelegatesTo(ArchiveXUnitResultFileContext) Closure resultFileClosure) {
         addResultFile('AUnitJunitHudsonTestType', resultFileClosure)
     }
 
-    void boostTest(Closure resultFileClosure) {
+    void boostTest(@DelegatesTo(ArchiveXUnitResultFileContext) Closure resultFileClosure) {
         addResultFile('BoostTestJunitHudsonTestType', resultFileClosure)
     }
 
-    void cTest(Closure resultFileClosure) {
+    void cTest(@DelegatesTo(ArchiveXUnitResultFileContext) Closure resultFileClosure) {
         addResultFile('CTestType', resultFileClosure)
     }
 
-    void check(Closure resultFileClosure) {
+    void check(@DelegatesTo(ArchiveXUnitResultFileContext) Closure resultFileClosure) {
         addResultFile('CheckType', resultFileClosure)
     }
 
-    void cppTest(Closure resultFileClosure) {
+    void cppTest(@DelegatesTo(ArchiveXUnitResultFileContext) Closure resultFileClosure) {
         addResultFile('CppTestJunitHudsonTestType', resultFileClosure)
     }
 
-    void cppUnit(Closure resultFileClosure) {
+    void cppUnit(@DelegatesTo(ArchiveXUnitResultFileContext) Closure resultFileClosure) {
         addResultFile('CppUnitJunitHudsonTestType', resultFileClosure)
     }
 
-    void embUnit(Closure resultFileClosure) {
+    void embUnit(@DelegatesTo(ArchiveXUnitResultFileContext) Closure resultFileClosure) {
         addResultFile('EmbUnitType', resultFileClosure)
     }
 
-    void fpcUnit(Closure resultFileClosure) {
+    void fpcUnit(@DelegatesTo(ArchiveXUnitResultFileContext) Closure resultFileClosure) {
         addResultFile('FPCUnitJunitHudsonTestType', resultFileClosure)
     }
 
-    void googleTest(Closure resultFileClosure) {
+    void googleTest(@DelegatesTo(ArchiveXUnitResultFileContext) Closure resultFileClosure) {
         addResultFile('GoogleTestType', resultFileClosure)
     }
 
-    void jUnit(Closure resultFileClosure) {
+    void jUnit(@DelegatesTo(ArchiveXUnitResultFileContext) Closure resultFileClosure) {
         addResultFile('JUnitType', resultFileClosure)
     }
 
-    void msTest(Closure resultFileClosure) {
+    void msTest(@DelegatesTo(ArchiveXUnitResultFileContext) Closure resultFileClosure) {
         addResultFile('MSTestJunitHudsonTestType', resultFileClosure)
     }
 
-    void mbUnit(Closure resultFileClosure) {
+    void mbUnit(@DelegatesTo(ArchiveXUnitResultFileContext) Closure resultFileClosure) {
         addResultFile('MbUnitType', resultFileClosure)
     }
 
-    void nUnit(Closure resultFileClosure) {
+    void nUnit(@DelegatesTo(ArchiveXUnitResultFileContext) Closure resultFileClosure) {
         addResultFile('NUnitJunitHudsonTestType', resultFileClosure)
     }
 
-    void phpUnit(Closure resultFileClosure) {
+    void phpUnit(@DelegatesTo(ArchiveXUnitResultFileContext) Closure resultFileClosure) {
         addResultFile('PHPUnitJunitHudsonTestType', resultFileClosure)
     }
 
-    void qTestLib(Closure resultFileClosure) {
+    void qTestLib(@DelegatesTo(ArchiveXUnitResultFileContext) Closure resultFileClosure) {
         addResultFile('QTestLibType', resultFileClosure)
     }
 
-    void unitTest(Closure resultFileClosure) {
+    void unitTest(@DelegatesTo(ArchiveXUnitResultFileContext) Closure resultFileClosure) {
         addResultFile('UnitTestJunitHudsonTestType', resultFileClosure)
     }
 
-    void valgrind(Closure resultFileClosure) {
+    void valgrind(@DelegatesTo(ArchiveXUnitResultFileContext) Closure resultFileClosure) {
         addResultFile('ValgrindJunitHudsonTestType', resultFileClosure)
     }
 
-    void customTool(Closure resultFileClosure) {
+    void customTool(@DelegatesTo(ArchiveXUnitCustomToolContext) Closure resultFileClosure) {
         ArchiveXUnitResultFileContext resultFileContext = new ArchiveXUnitCustomToolContext()
         ContextHelper.executeInContext(resultFileClosure, resultFileContext)
 

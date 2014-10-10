@@ -26,7 +26,7 @@ class TriggerContext implements Context {
      * @param crontab crontab execution spec
      * @param contextClosure closure for configuring the context
      */
-    def urlTrigger(String crontab = null, Closure contextClosure) {
+    def urlTrigger(String crontab = null, @DelegatesTo(UrlTriggerContext) Closure contextClosure) {
         UrlTriggerContext urlTriggerContext = new UrlTriggerContext(crontab)
         ContextHelper.executeInContext(contextClosure, urlTriggerContext)
 
@@ -135,7 +135,7 @@ class TriggerContext implements Context {
      *      <autoCloseFailedPullRequests>false</autoCloseFailedPullRequests>
      *  </org.jenkinsci.plugins.ghprb.GhprbTrigger>
      */
-    def pullRequest(Closure contextClosure) {
+    def pullRequest(@DelegatesTo(PullRequestBuilderContext) Closure contextClosure) {
         PullRequestBuilderContext pullRequestBuilderContext = new PullRequestBuilderContext()
         ContextHelper.executeInContext(contextClosure, pullRequestBuilderContext)
 
@@ -191,7 +191,7 @@ class TriggerContext implements Context {
      *                      RefUpdated
      * @return
      */
-    def gerrit(Closure contextClosure = null) {
+    def gerrit(@DelegatesTo(GerritContext) Closure contextClosure = null) {
         // See what they set up in the contextClosure before generating xml
         GerritContext gerritContext = new GerritContext(jobManagement)
         ContextHelper.executeInContext(contextClosure, gerritContext)

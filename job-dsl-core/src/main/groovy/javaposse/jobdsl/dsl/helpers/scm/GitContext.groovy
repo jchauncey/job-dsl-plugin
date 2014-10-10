@@ -32,7 +32,7 @@ class GitContext implements Context {
         this.withXmlActions = withXmlActions
     }
 
-    void remote(Closure remoteClosure) {
+    void remote(@DelegatesTo(RemoteContext) Closure remoteClosure) {
         RemoteContext remoteContext = new RemoteContext(withXmlActions)
         executeInContext(remoteClosure, remoteContext)
 
@@ -115,7 +115,7 @@ class GitContext implements Context {
         this.reference = reference
     }
 
-    void browser(Closure gitBrowserClosure) {
+    void browser(@DelegatesTo(GitBrowserContext) Closure gitBrowserClosure) {
         executeInContext(gitBrowserClosure, gitBrowserContext)
     }
 

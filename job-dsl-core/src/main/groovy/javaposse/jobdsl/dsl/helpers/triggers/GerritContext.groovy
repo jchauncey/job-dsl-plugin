@@ -57,7 +57,7 @@ class GerritContext implements Context {
         this.configureClosure = configureClosure
     }
 
-    def events(Closure eventClosure) {
+    def events(@DelegatesTo(GerritEventContext) Closure eventClosure) {
         ContextHelper.executeInContext(eventClosure, eventContext)
     }
 

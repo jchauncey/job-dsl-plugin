@@ -16,7 +16,7 @@ class ArchiveJUnitContext implements Context {
         retainLongStdout = retain
     }
 
-    void testDataPublishers(Closure testDataPublishersClosure) {
+    void testDataPublishers(@DelegatesTo(TestDataPublishersContext) Closure testDataPublishersClosure) {
         ContextHelper.executeInContext(testDataPublishersClosure, testDataPublishersContext)
     }
 }

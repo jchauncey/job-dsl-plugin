@@ -29,7 +29,7 @@ class GitPublisherContext implements Context {
      *     <updateTag>false</updateTag>
      * </hudson.plugins.git.GitPublisher_-TagToPush>
      */
-    void tag(String targetRepo, String name, Closure closure = null) {
+    void tag(String targetRepo, String name, @DelegatesTo(TagToPushContext) Closure closure = null) {
         checkArgument(!isNullOrEmpty(targetRepo), 'targetRepo must be specified')
         checkArgument(!isNullOrEmpty(name), 'name must be specified')
 

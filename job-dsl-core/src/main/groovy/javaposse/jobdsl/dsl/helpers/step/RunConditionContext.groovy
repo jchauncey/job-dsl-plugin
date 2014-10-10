@@ -68,16 +68,16 @@ class RunConditionContext implements Context {
         condition = new FileExistsCondition(file, baseDir)
     }
 
-    def not(Closure conditionClosure) {
+    def not(@DelegatesTo(RunConditionContext) Closure conditionClosure) {
         this.condition = new NotCondition(RunConditionFactory.of(conditionClosure))
     }
 
-    def and(Closure... conditionClosures) {
+    def and(@DelegatesTo(RunConditionContext) Closure... conditionClosures) {
         List<RunCondition> conditions = conditionClosures.collect { RunConditionFactory.of(it) }
         this.condition = new BinaryLogicOperation('And', conditions)
     }
 
-    def or(Closure... conditionClosures) {
+    def or(@DelegatesTo(RunConditionContext) Closure... conditionClosures) {
         List<RunCondition> conditions = conditionClosures.collect { RunConditionFactory.of(it) }
         this.condition = new BinaryLogicOperation('Or', conditions)
     }

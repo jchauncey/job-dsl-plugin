@@ -15,7 +15,7 @@ class ConditionalStepsContext extends StepContext {
         super(jobManagement)
     }
 
-    def condition(Closure conditionClosure) {
+    def condition(@DelegatesTo(RunConditionContext) Closure conditionClosure) {
         this.runCondition = RunConditionFactory.of(conditionClosure)
     }
 

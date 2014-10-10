@@ -114,7 +114,7 @@ class WrapperContext implements Context {
      *
      * @param timeoutClosure optional closure for configuring the timeout
      */
-    def timeout(String type = Timeout.absolute.toString(), Closure timeoutClosure = null) {
+    def timeout(String type = Timeout.absolute.toString(), @DelegatesTo(TimeoutContext) Closure timeoutClosure = null) {
         jobManagement.requireMinimumPluginVersion('build-timeout', '1.12')
         Timeout timeoutType = null
         if (type) {
@@ -163,7 +163,7 @@ class WrapperContext implements Context {
         }
     }
 
-    def timeout(Closure timeoutClosure) {
+    def timeout(@DelegatesTo(TimeoutContext) Closure timeoutClosure) {
         timeout(null, timeoutClosure)
     }
 
@@ -201,7 +201,7 @@ class WrapperContext implements Context {
     </org.jvnet.hudson.plugins.port__allocator.PortAllocator>
 
      */
-    def allocatePorts(String[] portsArg, Closure closure = null) {
+    def allocatePorts(String[] portsArg, @DelegatesTo(PortsContext) Closure closure = null) {
         PortsContext portContext = new PortsContext()
         ContextHelper.executeInContext(closure, portContext)
 
@@ -240,7 +240,7 @@ class WrapperContext implements Context {
         }
     }
 
-    def allocatePorts(Closure cl = null) {
+    def allocatePorts(@DelegatesTo(PortsContext) Closure cl = null) {
         allocatePorts(new String[0], cl)
     }
 
@@ -303,7 +303,7 @@ class WrapperContext implements Context {
      *
      * Runs build under XVNC.
      */
-    def xvnc(Closure xvncClosure = null) {
+    def xvnc(@DelegatesTo(XvncContext) Closure xvncClosure = null) {
         XvncContext xvncContext = new XvncContext(jobManagement)
         ContextHelper.executeInContext(xvncClosure, xvncContext)
 
@@ -366,7 +366,7 @@ class WrapperContext implements Context {
      * @param envClosure
      * @return
      */
-    def environmentVariables(Closure envClosure) {
+    def environmentVariables(@DelegatesTo(WrapperEnvironmentVariableContext) Closure envClosure) {
         WrapperEnvironmentVariableContext envContext = new WrapperEnvironmentVariableContext()
         ContextHelper.executeInContext(envClosure, envContext)
 
@@ -436,7 +436,7 @@ class WrapperContext implements Context {
      *
      * @param releaseClosure attributes and steps used by the plugin
      */
-    def release(Closure releaseClosure) {
+    def release(@DelegatesTo(ReleaseContext) Closure releaseClosure) {
         ReleaseContext releaseContext = new ReleaseContext(jobManagement)
         ContextHelper.executeInContext(releaseClosure, releaseContext)
 
@@ -480,7 +480,7 @@ class WrapperContext implements Context {
      *     </buildWrappers>
      * </project>
      */
-    def preBuildCleanup(Closure closure = null) {
+    def preBuildCleanup(@DelegatesTo(PreBuildCleanupContext) Closure closure = null) {
         PreBuildCleanupContext context = new PreBuildCleanupContext()
         ContextHelper.executeInContext(closure, context)
 
@@ -506,7 +506,7 @@ class WrapperContext implements Context {
      *     </buildWrappers>
      * </project>
      */
-    def logSizeChecker(Closure closure = null) {
+    def logSizeChecker(@DelegatesTo(LogFileSizeCheckerContext) Closure closure = null) {
         LogFileSizeCheckerContext context = new LogFileSizeCheckerContext()
         ContextHelper.executeInContext(closure, context)
 
@@ -553,7 +553,7 @@ class WrapperContext implements Context {
      *     <overwriteExistingKeychains>false</overwriteExistingKeychains>
      * </com.sic.plugins.kpp.KPPKeychainsBuildWrapper>
      */
-    def keychains(Closure keychainsClosure) {
+    def keychains(@DelegatesTo(KeychainsContext) Closure keychainsClosure) {
         KeychainsContext keychainsContext = new KeychainsContext()
         ContextHelper.executeInContext(keychainsClosure, keychainsContext)
 
@@ -611,7 +611,7 @@ class WrapperContext implements Context {
      *}
      * </pre>
      */
-    def mavenRelease(Closure releaseClosure = null) {
+    def mavenRelease(@DelegatesTo(MavenReleaseContext) Closure releaseClosure = null) {
         Preconditions.checkState type == JobType.Maven, 'mavenRelease can only be applied for Maven jobs'
 
         MavenReleaseContext context = new MavenReleaseContext()

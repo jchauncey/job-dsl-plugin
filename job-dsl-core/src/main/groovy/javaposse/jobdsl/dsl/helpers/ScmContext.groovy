@@ -115,7 +115,7 @@ class ScmContext implements Context {
        <scmName/>
      </hudson.plugins.git.GitSCM>
      */
-    def git(Closure gitClosure) {
+    def git(@DelegatesTo(GitContext) Closure gitClosure) {
         validateMulti()
 
         GitContext gitContext = new GitContext(withXmlActions, jobManagement)
@@ -429,7 +429,7 @@ class ScmContext implements Context {
      *
      * See http://wiki.jenkins-ci.org/display/JENKINS/ClearCase+Plugin
      */
-    def baseClearCase(Closure closure = null) {
+    def baseClearCase(@DelegatesTo(ClearCaseContext) Closure closure = null) {
         validateMulti()
 
         ClearCaseContext context = new ClearCaseContext()

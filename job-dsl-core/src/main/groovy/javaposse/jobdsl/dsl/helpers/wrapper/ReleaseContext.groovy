@@ -23,25 +23,25 @@ class ReleaseContext implements Context {
         this.jobManagement = jobManagement
     }
 
-    def preBuildSteps(Closure closure) {
+    def preBuildSteps(@DelegatesTo(StepContext) Closure closure) {
         def stepContext = new StepContext(jobManagement)
         ContextHelper.executeInContext(closure, stepContext)
         preBuildSteps.addAll(stepContext.stepNodes)
     }
 
-    def postSuccessfulBuildSteps(Closure closure) {
+    def postSuccessfulBuildSteps(@DelegatesTo(StepContext) Closure closure) {
         def stepContext = new StepContext(jobManagement)
         ContextHelper.executeInContext(closure, stepContext)
         postSuccessfulBuildSteps.addAll(stepContext.stepNodes)
     }
 
-    def postBuildSteps(Closure closure) {
+    def postBuildSteps(@DelegatesTo(StepContext) Closure closure) {
         def stepContext = new StepContext(jobManagement)
         ContextHelper.executeInContext(closure, stepContext)
         postBuildSteps.addAll(stepContext.stepNodes)
     }
 
-    def postFailedBuildSteps(Closure closure) {
+    def postFailedBuildSteps(@DelegatesTo(StepContext) Closure closure) {
         def stepContext = new StepContext(jobManagement)
         ContextHelper.executeInContext(closure, stepContext)
         postFailedBuildSteps.addAll(stepContext.stepNodes)
@@ -63,7 +63,7 @@ class ReleaseContext implements Context {
         this.configureBlock = closure
     }
 
-    def parameters(Closure parametersClosure) {
+    def parameters(@DelegatesTo(BuildParametersContext) Closure parametersClosure) {
         BuildParametersContext parametersContext = new BuildParametersContext()
         ContextHelper.executeInContext(parametersClosure, parametersContext)
         params.addAll(parametersContext.buildParameterNodes.values())
