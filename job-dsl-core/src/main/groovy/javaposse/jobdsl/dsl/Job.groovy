@@ -17,6 +17,8 @@ import javaposse.jobdsl.dsl.helpers.toplevel.ThrottleConcurrentBuildsContext
 import javaposse.jobdsl.dsl.helpers.triggers.TriggerContext
 import javaposse.jobdsl.dsl.helpers.wrapper.WrapperContext
 
+import static groovy.lang.Closure.DELEGATE_FIRST as DF
+
 /**
  * DSL element representing a Jenkins job.
  */
@@ -93,17 +95,17 @@ class Job extends Item {
      *       <contributors/>
      *     </EnvInjectJobProperty>
      */
-    def environmentVariables(@DelegatesTo(EnvironmentVariableContext) Closure envClosure) {
-        environmentVariables(null, envClosure)
+    def environmentVariables(@DelegatesTo(value = EnvironmentVariableContext, strategy = DF) Closure closure) {
+        environmentVariables(null, closure)
     }
 
     def environmentVariables(Map<Object, Object> vars,
-                             @DelegatesTo(EnvironmentVariableContext) Closure envClosure = null) {
+                             @DelegatesTo(value = EnvironmentVariableContext, strategy = DF) Closure closure = null) {
         EnvironmentVariableContext envContext = new EnvironmentVariableContext()
         if (vars) {
             envContext.envs(vars)
         }
-        ContextHelper.executeInContext(envClosure, envContext)
+        ContextHelper.executeInContext(closure, envContext)
 
         withXmlActions << WithXmlAction.create { Node project ->
             project / 'properties' / 'EnvInjectJobProperty' {
@@ -131,7 +133,8 @@ class Job extends Item {
      *     <properties>
      * </project>
      */
-    def throttleConcurrentBuilds(@DelegatesTo(ThrottleConcurrentBuildsContext) Closure throttleClosure) {
+    def throttleConcurrentBuilds(
+            @DelegatesTo(value = ThrottleConcurrentBuildsContext, strategy = DF) Closure throttleClosure) {
         ThrottleConcurrentBuildsContext throttleContext = new ThrottleConcurrentBuildsContext()
         ContextHelper.executeInContext(throttleClosure, throttleContext)
 
@@ -165,7 +168,8 @@ class Job extends Item {
      *     <properties>
      * </project>
      */
-    def lockableResources(String resources, @DelegatesTo(LockableResourcesContext) Closure lockClosure = null) {
+    def lockableResources(String resources,
+                          @DelegatesTo(value = LockableResourcesContext, strategy = DF) Closure lockClosure = null) {
         LockableResourcesContext lockContext = new LockableResourcesContext()
         ContextHelper.executeInContext(lockClosure, lockContext)
 
@@ -377,9 +381,9 @@ class Job extends Item {
      *     </com.tikal.hudson.plugins.notification.HudsonNotificationProperty>
      * </properties>
      */
-    def notifications(@DelegatesTo(NotificationContext) Closure notificationClosure) {
+    def notifications(@DelegatesTo(value = NotificationContext, strategy = DF) Closure closure) {
         NotificationContext notificationContext = new NotificationContext(jobManagement)
-        ContextHelper.executeInContext(notificationClosure, notificationContext)
+        ContextHelper.executeInContext(closure, notificationContext)
 
         withXmlActions << WithXmlAction.create { Node project ->
             project / 'properties' / 'com.tikal.hudson.plugins.notification.HudsonNotificationProperty' {
@@ -433,7 +437,7 @@ class Job extends Item {
         }
     }
 
-    def authorization(@DelegatesTo(AuthorizationContext) Closure closure) {
+    def authorization(@DelegatesTo(value = AuthorizationContext, strategy = DF) Closure closure) {
         AuthorizationContext context = new AuthorizationContext()
         ContextHelper.executeInContext(closure, context)
 
@@ -472,7 +476,7 @@ class Job extends Item {
         }
     }
 
-    def parameters(@DelegatesTo(BuildParametersContext) Closure closure) {
+    def parameters(@DelegatesTo(value = BuildParametersContext, strategy = DF) Closure closure) {
         BuildParametersContext context = new BuildParametersContext()
         ContextHelper.executeInContext(closure, context)
 
@@ -484,7 +488,7 @@ class Job extends Item {
         }
     }
 
-    def scm(@DelegatesTo(ScmContext) Closure closure) {
+    def scm(@DelegatesTo(value = ScmContext, strategy = DF) Closure closure) {
         ScmContext context = new ScmContext(false, withXmlActions, jobManagement)
         ContextHelper.executeInContext(closure, context)
 
@@ -500,7 +504,7 @@ class Job extends Item {
         }
     }
 
-    def multiscm(@DelegatesTo(ScmContext) Closure closure) {
+    def multiscm(@DelegatesTo(value = ScmContext, strategy = DF) Closure closure) {
         ScmContext context = new ScmContext(true, withXmlActions, jobManagement)
         ContextHelper.executeInContext(closure, context)
 
@@ -522,7 +526,7 @@ class Job extends Item {
         }
     }
 
-    def triggers(@DelegatesTo(TriggerContext) Closure closure) {
+    def triggers(@DelegatesTo(value = TriggerContext, strategy = DF) Closure closure) {
         TriggerContext context = new TriggerContext(withXmlActions, type, jobManagement)
         ContextHelper.executeInContext(closure, context)
 
@@ -533,7 +537,7 @@ class Job extends Item {
         }
     }
 
-    def wrappers(@DelegatesTo(WrapperContext) Closure closure) {
+    def wrappers(@DelegatesTo(value = WrapperContext, strategy = DF) Closure closure) {
         WrapperContext context = new WrapperContext(type, jobManagement)
         ContextHelper.executeInContext(closure, context)
 
@@ -544,7 +548,7 @@ class Job extends Item {
         }
     }
 
-    def steps(@DelegatesTo(StepContext) Closure closure) {
+    def steps(@DelegatesTo(value = StepContext, strategy = DF) Closure closure) {
         Preconditions.checkState(type != JobType.Maven, 'steps cannot be applied for Maven jobs')
 
         StepContext context = new StepContext(jobManagement)
@@ -557,7 +561,7 @@ class Job extends Item {
         }
     }
 
-    def publishers(@DelegatesTo(PublisherContext) Closure closure) {
+    def publishers(@DelegatesTo(value = PublisherContext, strategy = DF) Closure closure) {
         PublisherContext context = new PublisherContext(jobManagement)
         ContextHelper.executeInContext(closure, context)
 
@@ -576,7 +580,7 @@ class Job extends Item {
         }
     }
 
-    def axes(@DelegatesTo(AxisContext) Closure closure) {
+    def axes(@DelegatesTo(value = AxisContext, strategy = DF) Closure closure) {
         Preconditions.checkState(type == JobType.Matrix, 'axes can only be applied for Matrix jobs')
 
         AxisContext context = new AxisContext()
@@ -744,7 +748,7 @@ class Job extends Item {
         }
     }
 
-    def preBuildSteps(@DelegatesTo(StepContext) Closure preBuildClosure) {
+    def preBuildSteps(@DelegatesTo(value = StepContext, strategy = DF) Closure preBuildClosure) {
         Preconditions.checkState(type == JobType.Maven, 'prebuildSteps can only be applied for Maven jobs')
 
         StepContext preBuildContext = new StepContext(jobManagement)
@@ -757,7 +761,7 @@ class Job extends Item {
         }
     }
 
-    def postBuildSteps(@DelegatesTo(StepContext) Closure postBuildClosure) {
+    def postBuildSteps(@DelegatesTo(value = StepContext, strategy = DF) Closure postBuildClosure) {
         Preconditions.checkState(type == JobType.Maven, 'postBuildSteps can only be applied for Maven jobs')
 
         StepContext postBuildContext = new StepContext(jobManagement)

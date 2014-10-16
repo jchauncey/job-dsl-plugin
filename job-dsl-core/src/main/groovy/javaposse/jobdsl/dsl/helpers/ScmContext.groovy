@@ -10,6 +10,7 @@ import static com.google.common.base.Preconditions.checkArgument
 import static com.google.common.base.Preconditions.checkNotNull
 import static com.google.common.base.Preconditions.checkState
 import static ContextHelper.executeInContext
+import static groovy.lang.Closure.DELEGATE_FIRST
 import static javaposse.jobdsl.dsl.helpers.publisher.PublisherContext.validCloneWorkspaceCriteria
 
 class ScmContext implements Context {
@@ -115,7 +116,7 @@ class ScmContext implements Context {
        <scmName/>
      </hudson.plugins.git.GitSCM>
      */
-    def git(@DelegatesTo(GitContext) Closure gitClosure) {
+    def git(@DelegatesTo(value = GitContext, strategy = DELEGATE_FIRST) Closure gitClosure) {
         validateMulti()
 
         GitContext gitContext = new GitContext(withXmlActions, jobManagement)
@@ -429,7 +430,7 @@ class ScmContext implements Context {
      *
      * See http://wiki.jenkins-ci.org/display/JENKINS/ClearCase+Plugin
      */
-    def baseClearCase(@DelegatesTo(ClearCaseContext) Closure closure = null) {
+    def baseClearCase(@DelegatesTo(value = ClearCaseContext, strategy = DELEGATE_FIRST) Closure closure = null) {
         validateMulti()
 
         ClearCaseContext context = new ClearCaseContext()

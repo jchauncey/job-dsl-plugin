@@ -4,6 +4,8 @@ import javaposse.jobdsl.dsl.JobManagement
 import javaposse.jobdsl.dsl.helpers.ContextHelper
 import javaposse.jobdsl.dsl.helpers.Context
 
+import static groovy.lang.Closure.DELEGATE_FIRST
+
 class GerritContext implements Context {
     GerritEventContext eventContext
     Closure configureClosure
@@ -57,7 +59,7 @@ class GerritContext implements Context {
         this.configureClosure = configureClosure
     }
 
-    def events(@DelegatesTo(GerritEventContext) Closure eventClosure) {
+    def events(@DelegatesTo(value = GerritEventContext, strategy = DELEGATE_FIRST) Closure eventClosure) {
         ContextHelper.executeInContext(eventClosure, eventContext)
     }
 

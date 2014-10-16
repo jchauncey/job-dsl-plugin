@@ -5,6 +5,7 @@ import javaposse.jobdsl.dsl.helpers.step.condition.RunCondition
 import javaposse.jobdsl.dsl.helpers.step.condition.RunConditionFactory
 
 import static com.google.common.base.Preconditions.checkArgument
+import static groovy.lang.Closure.DELEGATE_FIRST
 
 class ConditionalStepsContext extends StepContext {
 
@@ -15,7 +16,7 @@ class ConditionalStepsContext extends StepContext {
         super(jobManagement)
     }
 
-    def condition(@DelegatesTo(RunConditionContext) Closure conditionClosure) {
+    def condition(@DelegatesTo(value = RunConditionContext, strategy = DELEGATE_FIRST) Closure conditionClosure) {
         this.runCondition = RunConditionFactory.of(conditionClosure)
     }
 

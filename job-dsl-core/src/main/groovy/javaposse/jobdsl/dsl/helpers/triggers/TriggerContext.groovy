@@ -8,6 +8,8 @@ import javaposse.jobdsl.dsl.helpers.ContextHelper
 import javaposse.jobdsl.dsl.helpers.Context
 import javaposse.jobdsl.dsl.helpers.triggers.GerritContext.GerritSpec
 
+import static groovy.lang.Closure.DELEGATE_FIRST
+
 class TriggerContext implements Context {
     private final List<WithXmlAction> withXmlActions
     private final JobType jobType
@@ -26,7 +28,8 @@ class TriggerContext implements Context {
      * @param crontab crontab execution spec
      * @param contextClosure closure for configuring the context
      */
-    def urlTrigger(String crontab = null, @DelegatesTo(UrlTriggerContext) Closure contextClosure) {
+    def urlTrigger(String crontab = null,
+                   @DelegatesTo(value = UrlTriggerContext, strategy = DELEGATE_FIRST) Closure contextClosure) {
         UrlTriggerContext urlTriggerContext = new UrlTriggerContext(crontab)
         ContextHelper.executeInContext(contextClosure, urlTriggerContext)
 
@@ -135,7 +138,7 @@ class TriggerContext implements Context {
      *      <autoCloseFailedPullRequests>false</autoCloseFailedPullRequests>
      *  </org.jenkinsci.plugins.ghprb.GhprbTrigger>
      */
-    def pullRequest(@DelegatesTo(PullRequestBuilderContext) Closure contextClosure) {
+    def pullRequest(@DelegatesTo(value = PullRequestBuilderContext, strategy = DELEGATE_FIRST) Closure contextClosure) {
         PullRequestBuilderContext pullRequestBuilderContext = new PullRequestBuilderContext()
         ContextHelper.executeInContext(contextClosure, pullRequestBuilderContext)
 
@@ -191,7 +194,7 @@ class TriggerContext implements Context {
      *                      RefUpdated
      * @return
      */
-    def gerrit(@DelegatesTo(GerritContext) Closure contextClosure = null) {
+    def gerrit(@DelegatesTo(value = GerritContext, strategy = DELEGATE_FIRST) Closure contextClosure = null) {
         // See what they set up in the contextClosure before generating xml
         GerritContext gerritContext = new GerritContext(jobManagement)
         ContextHelper.executeInContext(contextClosure, gerritContext)

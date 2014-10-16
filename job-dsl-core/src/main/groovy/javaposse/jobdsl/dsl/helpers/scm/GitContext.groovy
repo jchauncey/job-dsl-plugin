@@ -5,6 +5,7 @@ import javaposse.jobdsl.dsl.JobManagement
 import javaposse.jobdsl.dsl.WithXmlAction
 import javaposse.jobdsl.dsl.helpers.Context
 
+import static groovy.lang.Closure.DELEGATE_FIRST
 import static javaposse.jobdsl.dsl.helpers.ContextHelper.executeInContext
 
 class GitContext implements Context {
@@ -32,7 +33,7 @@ class GitContext implements Context {
         this.withXmlActions = withXmlActions
     }
 
-    void remote(@DelegatesTo(RemoteContext) Closure remoteClosure) {
+    void remote(@DelegatesTo(value = RemoteContext, strategy = DELEGATE_FIRST) Closure remoteClosure) {
         RemoteContext remoteContext = new RemoteContext(withXmlActions)
         executeInContext(remoteClosure, remoteContext)
 
@@ -115,7 +116,7 @@ class GitContext implements Context {
         this.reference = reference
     }
 
-    void browser(@DelegatesTo(GitBrowserContext) Closure gitBrowserClosure) {
+    void browser(@DelegatesTo(value = GitBrowserContext, strategy = DELEGATE_FIRST) Closure gitBrowserClosure) {
         executeInContext(gitBrowserClosure, gitBrowserContext)
     }
 

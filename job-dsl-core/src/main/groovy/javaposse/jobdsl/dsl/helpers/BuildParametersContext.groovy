@@ -2,6 +2,7 @@ package javaposse.jobdsl.dsl.helpers
 
 import static com.google.common.base.Preconditions.checkNotNull
 import static com.google.common.base.Preconditions.checkArgument
+import static groovy.lang.Closure.DELEGATE_FIRST
 
 class BuildParametersContext implements Context {
 
@@ -221,7 +222,8 @@ class BuildParametersContext implements Context {
      * @param description (optional)
      * @return
      */
-    def nodeParam(String parameterName, @DelegatesTo(NodeParamContext) Closure nodeParamClosure = null) {
+    def nodeParam(String parameterName,
+                  @DelegatesTo(value = NodeParamContext, strategy = DELEGATE_FIRST) Closure nodeParamClosure = null) {
         checkArgument(!buildParameterNodes.containsKey(parameterName), 'parameter $parameterName already defined')
         checkNotNull(parameterName, 'parameterName cannot be null')
         checkArgument(parameterName.length() > 0)

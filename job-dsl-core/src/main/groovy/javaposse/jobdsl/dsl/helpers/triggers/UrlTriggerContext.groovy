@@ -3,6 +3,8 @@ package javaposse.jobdsl.dsl.helpers.triggers
 import javaposse.jobdsl.dsl.helpers.Context
 import javaposse.jobdsl.dsl.helpers.ContextHelper
 
+import static groovy.lang.Closure.DELEGATE_FIRST
+
 /**
  * Top level context for configuring the URL trigger functionality.
  */
@@ -34,7 +36,8 @@ class UrlTriggerContext implements Context {
     }
 
     /** adds a monitored URL to the trigger. */
-    def url(String url, @DelegatesTo(UrlTriggerEntryContext) Closure entryClosure = null) {
+    def url(String url,
+            @DelegatesTo(value = UrlTriggerEntryContext, strategy = DELEGATE_FIRST) Closure entryClosure = null) {
         UrlTriggerEntryContext entryContext = new UrlTriggerEntryContext(url)
         ContextHelper.executeInContext(entryClosure, entryContext)
         entries << entryContext

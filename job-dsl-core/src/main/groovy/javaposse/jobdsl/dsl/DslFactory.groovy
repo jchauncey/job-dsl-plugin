@@ -1,19 +1,22 @@
 package javaposse.jobdsl.dsl
 
+import static groovy.lang.Closure.DELEGATE_FIRST
+
 interface DslFactory {
-    Job job(@DelegatesTo(Job) Closure closure)
+    Job job(@DelegatesTo(value = Job, strategy = DELEGATE_FIRST) Closure closure)
 
-    Job job(Map<String, Object> arguments, @DelegatesTo(Job) Closure closure)
+    Job job(Map<String, Object> arguments, @DelegatesTo(value = Job, strategy = DELEGATE_FIRST) Closure closure)
 
-    View view(@DelegatesTo(View) Closure closure)
+    View view(@DelegatesTo(value = View, strategy = DELEGATE_FIRST) Closure closure)
 
-    View view(Map<String, Object> arguments, @DelegatesTo(View) Closure closure)
+    View view(Map<String, Object> arguments, @DelegatesTo(value = View, strategy = DELEGATE_FIRST) Closure closure)
 
-    Folder folder(@DelegatesTo(Folder) Closure closure)
+    Folder folder(@DelegatesTo(value = Folder, strategy = DELEGATE_FIRST) Closure closure)
 
-    ConfigFile configFile(@DelegatesTo(ConfigFile) Closure closure)
+    ConfigFile configFile(@DelegatesTo(value = ConfigFile, strategy = DELEGATE_FIRST) Closure closure)
 
-    ConfigFile configFile(Map<String, Object> arguments, @DelegatesTo(ConfigFile) Closure closure)
+    ConfigFile configFile(Map<String, Object> arguments,
+                          @DelegatesTo(value = ConfigFile, strategy = DELEGATE_FIRST) Closure closure)
 
     /**
      * Schedule a job to be run later. Validation of the job name isn't done until after the DSL has run.

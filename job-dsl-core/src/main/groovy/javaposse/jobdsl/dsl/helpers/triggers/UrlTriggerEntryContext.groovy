@@ -5,6 +5,8 @@ import javaposse.jobdsl.dsl.helpers.Context
 import javaposse.jobdsl.dsl.helpers.ContextHelper
 import javaposse.jobdsl.dsl.helpers.triggers.UrlTriggerInspectionContext.Inspection
 
+import static groovy.lang.Closure.DELEGATE_FIRST as DF
+
 /** Configuration container for a monitored URL.*/
 class UrlTriggerEntryContext implements Context {
 
@@ -108,7 +110,8 @@ class UrlTriggerEntryContext implements Context {
      * @param inspectionClosure for configuring RegExps/Path expressions for xml, text and json
      * @return
      */
-    def inspection(String type, @DelegatesTo(UrlTriggerInspectionContext) Closure inspectionClosure = null) {
+    def inspection(String type,
+                   @DelegatesTo(value = UrlTriggerInspectionContext, strategy = DF) Closure inspectionClosure = null) {
         Inspection itype
         try {
             itype = Preconditions.checkNotNull(Inspection.valueOf(type), 'Inspection must not be null' as Object)

@@ -4,6 +4,8 @@ import javaposse.jobdsl.dsl.JobManagement
 import javaposse.jobdsl.dsl.helpers.ContextHelper
 import javaposse.jobdsl.dsl.helpers.Context
 
+import static groovy.lang.Closure.DELEGATE_FIRST
+
 class PhaseContext implements Context {
     private final JobManagement jobManagement
 
@@ -26,17 +28,18 @@ class PhaseContext implements Context {
         this.continuationCondition = continuationCondition
     }
 
-    def job(String jobName, @DelegatesTo(PhaseJobContext) Closure phaseJobClosure = null) {
+    def job(String jobName,
+            @DelegatesTo(value = PhaseJobContext, strategy = DELEGATE_FIRST) Closure phaseJobClosure = null) {
         job(jobName, true, true, phaseJobClosure)
     }
 
     def job(String jobName, boolean currentJobParameters,
-            @DelegatesTo(PhaseJobContext) Closure phaseJobClosure = null) {
+            @DelegatesTo(value = PhaseJobContext, strategy = DELEGATE_FIRST) Closure phaseJobClosure = null) {
         job(jobName, currentJobParameters, true, phaseJobClosure)
     }
 
     def job(String jobName, boolean currentJobParameters, boolean exposedScm,
-            @DelegatesTo(PhaseJobContext) Closure phaseJobClosure = null) {
+            @DelegatesTo(value = PhaseJobContext, strategy = DELEGATE_FIRST) Closure phaseJobClosure = null) {
         PhaseJobContext phaseJobContext = new PhaseJobContext(jobManagement, jobName, currentJobParameters, exposedScm)
         ContextHelper.executeInContext(phaseJobClosure, phaseJobContext)
 

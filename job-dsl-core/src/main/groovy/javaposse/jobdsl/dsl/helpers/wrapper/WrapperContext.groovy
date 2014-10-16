@@ -8,6 +8,8 @@ import javaposse.jobdsl.dsl.WithXmlAction
 import javaposse.jobdsl.dsl.helpers.Context
 import javaposse.jobdsl.dsl.helpers.ContextHelper
 
+import static groovy.lang.Closure.DELEGATE_FIRST as DF
+
 class WrapperContext implements Context {
     List<Node> wrapperNodes = []
     JobType type
@@ -114,7 +116,8 @@ class WrapperContext implements Context {
      *
      * @param timeoutClosure optional closure for configuring the timeout
      */
-    def timeout(String type = Timeout.absolute.toString(), @DelegatesTo(TimeoutContext) Closure timeoutClosure = null) {
+    def timeout(String type = Timeout.absolute.toString(),
+                @DelegatesTo(value = TimeoutContext, strategy = DF) Closure timeoutClosure = null) {
         jobManagement.requireMinimumPluginVersion('build-timeout', '1.12')
         Timeout timeoutType = null
         if (type) {
@@ -163,7 +166,7 @@ class WrapperContext implements Context {
         }
     }
 
-    def timeout(@DelegatesTo(TimeoutContext) Closure timeoutClosure) {
+    def timeout(@DelegatesTo(value = TimeoutContext, strategy = DF) Closure timeoutClosure) {
         timeout(null, timeoutClosure)
     }
 
@@ -201,7 +204,8 @@ class WrapperContext implements Context {
     </org.jvnet.hudson.plugins.port__allocator.PortAllocator>
 
      */
-    def allocatePorts(String[] portsArg, @DelegatesTo(PortsContext) Closure closure = null) {
+    def allocatePorts(String[] portsArg,
+                      @DelegatesTo(value = PortsContext, strategy = DF) Closure closure = null) {
         PortsContext portContext = new PortsContext()
         ContextHelper.executeInContext(closure, portContext)
 
@@ -240,7 +244,7 @@ class WrapperContext implements Context {
         }
     }
 
-    def allocatePorts(@DelegatesTo(PortsContext) Closure cl = null) {
+    def allocatePorts(@DelegatesTo(value = PortsContext, strategy = DF) Closure cl = null) {
         allocatePorts(new String[0], cl)
     }
 
@@ -303,7 +307,7 @@ class WrapperContext implements Context {
      *
      * Runs build under XVNC.
      */
-    def xvnc(@DelegatesTo(XvncContext) Closure xvncClosure = null) {
+    def xvnc(@DelegatesTo(value = XvncContext, strategy = DF) Closure xvncClosure = null) {
         XvncContext xvncContext = new XvncContext(jobManagement)
         ContextHelper.executeInContext(xvncClosure, xvncContext)
 
@@ -363,12 +367,12 @@ class WrapperContext implements Context {
      * </EnvInjectBuildWrapper>
      * }
      * </pre>
-     * @param envClosure
+     * @param closure
      * @return
      */
-    def environmentVariables(@DelegatesTo(WrapperEnvironmentVariableContext) Closure envClosure) {
+    def environmentVariables(@DelegatesTo(value = WrapperEnvironmentVariableContext, strategy = DF) Closure closure) {
         WrapperEnvironmentVariableContext envContext = new WrapperEnvironmentVariableContext()
-        ContextHelper.executeInContext(envClosure, envContext)
+        ContextHelper.executeInContext(closure, envContext)
 
         def envNode = new NodeBuilder().'EnvInjectBuildWrapper' {
             envContext.addInfoToBuilder(delegate)
@@ -436,7 +440,7 @@ class WrapperContext implements Context {
      *
      * @param releaseClosure attributes and steps used by the plugin
      */
-    def release(@DelegatesTo(ReleaseContext) Closure releaseClosure) {
+    def release(@DelegatesTo(value = ReleaseContext, strategy = DF) Closure releaseClosure) {
         ReleaseContext releaseContext = new ReleaseContext(jobManagement)
         ContextHelper.executeInContext(releaseClosure, releaseContext)
 
@@ -480,7 +484,7 @@ class WrapperContext implements Context {
      *     </buildWrappers>
      * </project>
      */
-    def preBuildCleanup(@DelegatesTo(PreBuildCleanupContext) Closure closure = null) {
+    def preBuildCleanup(@DelegatesTo(value = PreBuildCleanupContext, strategy = DF) Closure closure = null) {
         PreBuildCleanupContext context = new PreBuildCleanupContext()
         ContextHelper.executeInContext(closure, context)
 
@@ -506,7 +510,7 @@ class WrapperContext implements Context {
      *     </buildWrappers>
      * </project>
      */
-    def logSizeChecker(@DelegatesTo(LogFileSizeCheckerContext) Closure closure = null) {
+    def logSizeChecker(@DelegatesTo(value = LogFileSizeCheckerContext, strategy = DF) Closure closure = null) {
         LogFileSizeCheckerContext context = new LogFileSizeCheckerContext()
         ContextHelper.executeInContext(closure, context)
 
@@ -553,7 +557,7 @@ class WrapperContext implements Context {
      *     <overwriteExistingKeychains>false</overwriteExistingKeychains>
      * </com.sic.plugins.kpp.KPPKeychainsBuildWrapper>
      */
-    def keychains(@DelegatesTo(KeychainsContext) Closure keychainsClosure) {
+    def keychains(@DelegatesTo(value = KeychainsContext, strategy = DF) Closure keychainsClosure) {
         KeychainsContext keychainsContext = new KeychainsContext()
         ContextHelper.executeInContext(keychainsClosure, keychainsContext)
 
@@ -611,7 +615,7 @@ class WrapperContext implements Context {
      *}
      * </pre>
      */
-    def mavenRelease(@DelegatesTo(MavenReleaseContext) Closure releaseClosure = null) {
+    def mavenRelease(@DelegatesTo(value = MavenReleaseContext, strategy = DF) Closure releaseClosure = null) {
         Preconditions.checkState type == JobType.Maven, 'mavenRelease can only be applied for Maven jobs'
 
         MavenReleaseContext context = new MavenReleaseContext()

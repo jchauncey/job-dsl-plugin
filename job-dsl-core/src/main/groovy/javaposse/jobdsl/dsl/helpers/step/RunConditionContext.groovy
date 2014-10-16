@@ -12,6 +12,8 @@ import javaposse.jobdsl.dsl.helpers.step.condition.RunConditionFactory
 import javaposse.jobdsl.dsl.helpers.step.condition.SimpleCondition
 import javaposse.jobdsl.dsl.helpers.step.condition.StatusCondition
 
+import static groovy.lang.Closure.DELEGATE_FIRST
+
 class RunConditionContext implements Context {
 
     RunCondition condition
@@ -68,16 +70,16 @@ class RunConditionContext implements Context {
         condition = new FileExistsCondition(file, baseDir)
     }
 
-    def not(@DelegatesTo(RunConditionContext) Closure conditionClosure) {
+    def not(@DelegatesTo(value = RunConditionContext, strategy = DELEGATE_FIRST) Closure conditionClosure) {
         this.condition = new NotCondition(RunConditionFactory.of(conditionClosure))
     }
 
-    def and(@DelegatesTo(RunConditionContext) Closure... conditionClosures) {
+    def and(@DelegatesTo(value = RunConditionContext, strategy = DELEGATE_FIRST) Closure... conditionClosures) {
         List<RunCondition> conditions = conditionClosures.collect { RunConditionFactory.of(it) }
         this.condition = new BinaryLogicOperation('And', conditions)
     }
 
-    def or(@DelegatesTo(RunConditionContext) Closure... conditionClosures) {
+    def or(@DelegatesTo(value = RunConditionContext, strategy = DELEGATE_FIRST) Closure... conditionClosures) {
         List<RunCondition> conditions = conditionClosures.collect { RunConditionFactory.of(it) }
         this.condition = new BinaryLogicOperation('Or', conditions)
     }

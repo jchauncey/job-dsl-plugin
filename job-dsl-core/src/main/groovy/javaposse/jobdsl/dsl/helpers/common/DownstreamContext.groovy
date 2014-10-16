@@ -3,36 +3,39 @@ package javaposse.jobdsl.dsl.helpers.common
 import javaposse.jobdsl.dsl.helpers.ContextHelper
 import javaposse.jobdsl.dsl.helpers.Context
 
+import static groovy.lang.Closure.DELEGATE_FIRST
+
 class DownstreamContext implements Context {
     public static final THRESHOLD_COLOR_MAP = ['SUCCESS': 'BLUE', 'UNSTABLE': 'YELLOW', 'FAILURE': 'RED']
     public static final THRESHOLD_ORDINAL_MAP = ['SUCCESS': 0, 'UNSTABLE': 1, 'FAILURE': 2]
 
     private final List<DownstreamTriggerContext> triggers = []
 
-    def trigger(String projects, @DelegatesTo(DownstreamTriggerContext) Closure downstreamTriggerClosure = null) {
-        trigger(projects, null, downstreamTriggerClosure)
+    def trigger(String projects,
+                @DelegatesTo(value = DownstreamTriggerContext, strategy = DELEGATE_FIRST) Closure closure = null) {
+        trigger(projects, null, closure)
     }
 
     def trigger(String projects, String condition,
-                @DelegatesTo(DownstreamTriggerContext) Closure downstreamTriggerClosure = null) {
-        trigger(projects, condition, false, downstreamTriggerClosure)
+                @DelegatesTo(value = DownstreamTriggerContext, strategy = DELEGATE_FIRST) Closure closure = null) {
+        trigger(projects, condition, false, closure)
     }
 
     def trigger(String projects, String condition, boolean triggerWithNoParameters,
-                @DelegatesTo(DownstreamTriggerContext) Closure downstreamTriggerClosure = null) {
-        trigger(projects, condition, triggerWithNoParameters, [:], downstreamTriggerClosure)
+                @DelegatesTo(value = DownstreamTriggerContext, strategy = DELEGATE_FIRST) Closure closure = null) {
+        trigger(projects, condition, triggerWithNoParameters, [:], closure)
     }
 
     def trigger(String projects, String condition, boolean triggerWithNoParameters,
                 Map<String, String> blockingThresholds,
-                @DelegatesTo(DownstreamTriggerContext) Closure downstreamTriggerClosure = null) {
+                @DelegatesTo(value = DownstreamTriggerContext, strategy = DELEGATE_FIRST) Closure closure = null) {
         DownstreamTriggerContext downstreamTriggerContext = new DownstreamTriggerContext()
         downstreamTriggerContext.projects = projects
         downstreamTriggerContext.condition = condition ?: 'SUCCESS'
         downstreamTriggerContext.triggerWithNoParameters = triggerWithNoParameters
         downstreamTriggerContext.blockingThresholdsFromMap(blockingThresholds)
 
-        ContextHelper.executeInContext(downstreamTriggerClosure, downstreamTriggerContext)
+        ContextHelper.executeInContext(closure, downstreamTriggerContext)
 
         // Validate this trigger
         assert validDownstreamConditionNames.contains(downstreamTriggerContext.condition),

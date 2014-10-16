@@ -6,6 +6,7 @@ import javaposse.jobdsl.dsl.helpers.Context
 
 import static com.google.common.base.Preconditions.checkArgument
 import static com.google.common.base.Strings.isNullOrEmpty
+import static groovy.lang.Closure.DELEGATE_FIRST
 import static javaposse.jobdsl.dsl.helpers.ContextHelper.executeInContext
 
 class NotificationContext implements Context {
@@ -24,13 +25,13 @@ class NotificationContext implements Context {
     }
 
     void endpoint(String url, String protocol = 'HTTP', String format = 'JSON',
-                  @DelegatesTo(NotificationEndpointContext) Closure notificationEndpointClosure) {
+                  @DelegatesTo(value = NotificationEndpointContext, strategy = DELEGATE_FIRST) Closure closure) {
         checkArgument(!isNullOrEmpty(url), 'url must be specified')
         checkArgument(PROTOCOLS.contains(protocol), "protocol must be one of ${PROTOCOLS.join(', ')}")
         checkArgument(FORMATS.contains(format), "format must be one of ${FORMATS.join(', ')}")
 
         NotificationEndpointContext notificationEndpointContext = new NotificationEndpointContext(jobManagement)
-        executeInContext(notificationEndpointClosure, notificationEndpointContext)
+        executeInContext(closure, notificationEndpointContext)
 
         endpoints << NodeBuilder.newInstance().'com.tikal.hudson.plugins.notification.Endpoint' {
             delegate.url(url)

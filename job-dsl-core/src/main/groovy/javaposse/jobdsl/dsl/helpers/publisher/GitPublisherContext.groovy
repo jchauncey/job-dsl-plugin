@@ -5,6 +5,7 @@ import javaposse.jobdsl.dsl.helpers.Context
 
 import static com.google.common.base.Preconditions.checkArgument
 import static com.google.common.base.Strings.isNullOrEmpty
+import static groovy.lang.Closure.DELEGATE_FIRST
 
 class GitPublisherContext implements Context {
     boolean pushOnlyIfSuccess
@@ -29,7 +30,8 @@ class GitPublisherContext implements Context {
      *     <updateTag>false</updateTag>
      * </hudson.plugins.git.GitPublisher_-TagToPush>
      */
-    void tag(String targetRepo, String name, @DelegatesTo(TagToPushContext) Closure closure = null) {
+    void tag(String targetRepo, String name,
+             @DelegatesTo(value = TagToPushContext, strategy = DELEGATE_FIRST) Closure closure = null) {
         checkArgument(!isNullOrEmpty(targetRepo), 'targetRepo must be specified')
         checkArgument(!isNullOrEmpty(name), 'name must be specified')
 

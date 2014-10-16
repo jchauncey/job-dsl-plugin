@@ -12,6 +12,7 @@ import javaposse.jobdsl.dsl.helpers.common.DownstreamContext
 
 import static com.google.common.base.Preconditions.checkArgument
 import static com.google.common.base.Strings.isNullOrEmpty
+import static groovy.lang.Closure.DELEGATE_FIRST as DF
 
 class PublisherContext implements Context {
     private final JobManagement jobManagement
@@ -56,17 +57,18 @@ class PublisherContext implements Context {
      </hudson.plugins.emailext.ExtendedEmailPublisher>
      * @return
      */
-    def extendedEmail(String recipients = null, @DelegatesTo(EmailContext) Closure emailClosure = null) {
+    def extendedEmail(String recipients = null,
+                      @DelegatesTo(value = EmailContext, strategy = DF) Closure emailClosure = null) {
         extendedEmail(recipients, null, emailClosure)
     }
 
     def extendedEmail(String recipients, String subjectTemplate,
-                      @DelegatesTo(EmailContext) Closure emailClosure = null) {
+                      @DelegatesTo(value = EmailContext, strategy = DF) Closure emailClosure = null) {
         extendedEmail(recipients, subjectTemplate, null, emailClosure)
     }
 
     def extendedEmail(String recipients, String subjectTemplate, String contentTemplate,
-                      @DelegatesTo(EmailContext) Closure emailClosure = null) {
+                      @DelegatesTo(value = EmailContext, strategy = DF) Closure emailClosure = null) {
         EmailContext emailContext = new EmailContext()
         ContextHelper.executeInContext(emailClosure, emailContext)
 
@@ -104,7 +106,7 @@ class PublisherContext implements Context {
 
         // Apply their overrides
         if (emailContext.configureClosure) {
-            emailContext.configureClosure.resolveStrategy = Closure.DELEGATE_FIRST
+            emailContext.configureClosure.resolveStrategy = DF
             WithXmlAction action = new WithXmlAction(emailContext.configureClosure)
             action.execute(emailNode)
         }
@@ -138,9 +140,9 @@ class PublisherContext implements Context {
      *     <allowEmptyArchive>false</allowEmptyArchive>
      * </hudson.tasks.ArtifactArchiver>
      */
-    def archiveArtifacts(@DelegatesTo(ArchiveArtifactsContext) Closure artifactsClosure) {
+    def archiveArtifacts(@DelegatesTo(value = ArchiveArtifactsContext, strategy = DF) Closure closure) {
         ArchiveArtifactsContext artifactsContext = new ArchiveArtifactsContext()
-        ContextHelper.executeInContext(artifactsClosure, artifactsContext)
+        ContextHelper.executeInContext(closure, artifactsContext)
 
         publisherNodes << new NodeBuilder().'hudson.tasks.ArtifactArchiver' {
             artifacts artifactsContext.patterns.join(',')
@@ -173,7 +175,8 @@ class PublisherContext implements Context {
      *     </testDataPublishers>
      * </hudson.tasks.junit.JUnitResultArchiver>
      */
-    def archiveJunit(String glob, @DelegatesTo(ArchiveJUnitContext) Closure junitClosure = null) {
+    def archiveJunit(String glob, 
+                     @DelegatesTo(value = ArchiveJUnitContext, strategy = DF) Closure junitClosure = null) {
         ArchiveJUnitContext junitContext = new ArchiveJUnitContext(jobManagement)
         ContextHelper.executeInContext(junitClosure, junitContext)
 
@@ -241,7 +244,7 @@ class PublisherContext implements Context {
      *     </extraConfiguration>
      * </xunit>
      */
-    def archiveXUnit(@DelegatesTo(ArchiveXUnitContext) Closure xUnitClosure) {
+    def archiveXUnit(@DelegatesTo(value = ArchiveXUnitContext, strategy = DF) Closure xUnitClosure) {
         ArchiveXUnitContext xUnitContext = new ArchiveXUnitContext()
         ContextHelper.executeInContext(xUnitClosure, xUnitContext)
 
@@ -303,10 +306,10 @@ class PublisherContext implements Context {
      <changeBuildStatus>false</changeBuildStatus>
      </hudson.plugins.jacoco.JacocoPublisher>
      **/
-    def jacocoCodeCoverage(@DelegatesTo(JacocoContext) Closure jacocoClosure = null) {
+    def jacocoCodeCoverage(@DelegatesTo(value = JacocoContext, strategy = DF) Closure closure = null) {
 
         JacocoContext jacocoContext = new JacocoContext()
-        ContextHelper.executeInContext(jacocoClosure, jacocoContext)
+        ContextHelper.executeInContext(closure, jacocoContext)
 
         def nodeBuilder = NodeBuilder.newInstance()
 
@@ -349,7 +352,7 @@ class PublisherContext implements Context {
      </reportTargets>
      </htmlpublisher.HtmlPublisher>
      */
-    def publishHtml(@DelegatesTo(HtmlReportContext) Closure htmlReportContext) {
+    def publishHtml(@DelegatesTo(value = HtmlReportContext, strategy = DF) Closure htmlReportContext) {
         HtmlReportContext reportContext = new HtmlReportContext()
         ContextHelper.executeInContext(htmlReportContext, reportContext)
 
@@ -390,16 +393,18 @@ class PublisherContext implements Context {
      *     <matrixMultiplier>ONLY_CONFIGURATIONS</matrixMultiplier>
      * </hudson.plugins.jabber.im.transport.JabberPublisher>
      */
-    def publishJabber(String target, @DelegatesTo(JabberContext) Closure jabberClosure = null) {
+    def publishJabber(String target,
+                      @DelegatesTo(value = JabberContext, strategy = DF) Closure jabberClosure = null) {
         publishJabber(target, null, null, jabberClosure)
     }
 
-    def publishJabber(String target, String strategyName, @DelegatesTo(JabberContext) Closure jabberClosure = null) {
+    def publishJabber(String target, String strategyName, 
+                      @DelegatesTo(value = JabberContext, strategy = DF) Closure jabberClosure = null) {
         publishJabber(target, strategyName, null, jabberClosure)
     }
 
     def publishJabber(String targetsArg, String strategyName, String channelNotificationName,
-                      @DelegatesTo(JabberContext) Closure jabberClosure = null) {
+                      @DelegatesTo(value = JabberContext, strategy = DF) Closure jabberClosure = null) {
         JabberContext jabberContext = new JabberContext()
         jabberContext.strategyName = strategyName ?: 'ALL'
         jabberContext.channelNotificationName = channelNotificationName ?: 'Default'
@@ -459,7 +464,7 @@ class PublisherContext implements Context {
      *     </entries>
      * </be.certipost.hudson.plugin.SCPRepositoryPublisher>
      */
-    def publishScp(String site, @DelegatesTo(ScpContext) Closure scpClosure) {
+    def publishScp(String site, @DelegatesTo(value = ScpContext, strategy = DF) Closure scpClosure) {
         ScpContext scpContext = new ScpContext()
         ContextHelper.executeInContext(scpClosure, scpContext)
 
@@ -491,31 +496,32 @@ class PublisherContext implements Context {
      *     <overrideDefaultExcludes>true</overrideDefaultExcludes>
      * </hudson.plugins.cloneworkspace.CloneWorkspacePublisher>
      */
-    def publishCloneWorkspace(String workspaceGlob, @DelegatesTo(CloneWorkspaceContext) Closure cloneWorkspaceClosure) {
-        publishCloneWorkspace(workspaceGlob, '', 'Any', 'TAR', false, cloneWorkspaceClosure)
+    def publishCloneWorkspace(String workspaceGlob, 
+                              @DelegatesTo(value = CloneWorkspaceContext, strategy = DF) Closure closure) {
+        publishCloneWorkspace(workspaceGlob, '', 'Any', 'TAR', false, closure)
     }
 
     def publishCloneWorkspace(String workspaceGlob, String workspaceExcludeGlob,
-                              @DelegatesTo(CloneWorkspaceContext) Closure cloneWorkspaceClosure) {
-        publishCloneWorkspace(workspaceGlob, workspaceExcludeGlob, 'Any', 'TAR', false, cloneWorkspaceClosure)
+                              @DelegatesTo(value = CloneWorkspaceContext, strategy = DF) Closure closure) {
+        publishCloneWorkspace(workspaceGlob, workspaceExcludeGlob, 'Any', 'TAR', false, closure)
     }
 
     def publishCloneWorkspace(String workspaceGlob, String workspaceExcludeGlob, String criteria, String archiveMethod,
-                              @DelegatesTo(CloneWorkspaceContext) Closure cloneWorkspaceClosure) {
+                              @DelegatesTo(value = CloneWorkspaceContext, strategy = DF) Closure closure) {
         publishCloneWorkspace(
-                workspaceGlob, workspaceExcludeGlob, criteria, archiveMethod, false, cloneWorkspaceClosure
+                workspaceGlob, workspaceExcludeGlob, criteria, archiveMethod, false, closure
         )
     }
 
     def publishCloneWorkspace(String workspaceGlobArg, String workspaceExcludeGlobArg = '', String criteriaArg = 'Any',
                               String archiveMethodArg = 'TAR', boolean overrideDefaultExcludesArg = false,
-                              @DelegatesTo(CloneWorkspaceContext) Closure cloneWorkspaceClosure = null) {
+                              @DelegatesTo(value = CloneWorkspaceContext, strategy = DF) Closure closure = null) {
         CloneWorkspaceContext cloneWorkspaceContext = new CloneWorkspaceContext()
         cloneWorkspaceContext.criteria = criteriaArg ?: 'Any'
         cloneWorkspaceContext.archiveMethod = archiveMethodArg ?: 'TAR'
         cloneWorkspaceContext.workspaceExcludeGlob = workspaceExcludeGlobArg ?: ''
         cloneWorkspaceContext.overrideDefaultExcludes = overrideDefaultExcludesArg ?: false
-        ContextHelper.executeInContext(cloneWorkspaceClosure, cloneWorkspaceContext)
+        ContextHelper.executeInContext(closure, cloneWorkspaceContext)
 
         // Validate values
         assert validCloneWorkspaceCriteria.contains(cloneWorkspaceContext.criteria),
@@ -607,7 +613,7 @@ class PublisherContext implements Context {
      </configs>
      </hudson.plugins.parameterizedtrigger.BuildTrigger>
      */
-    def downstreamParameterized(@DelegatesTo(DownstreamContext) Closure downstreamClosure) {
+    def downstreamParameterized(@DelegatesTo(value = DownstreamContext, strategy = DF) Closure downstreamClosure) {
         DownstreamContext downstreamContext = new DownstreamContext()
         ContextHelper.executeInContext(downstreamClosure, downstreamContext)
 
@@ -615,11 +621,12 @@ class PublisherContext implements Context {
         publisherNodes << publishNode
     }
 
-    def violations(@DelegatesTo(ViolationsContext) Closure violationsClosure = null) {
+    def violations(@DelegatesTo(value = ViolationsContext, strategy = DF) Closure violationsClosure = null) {
         violations(100, violationsClosure)
     }
 
-    def violations(int perFileDisplayLimit, @DelegatesTo(ViolationsContext) Closure violationsClosure = null) {
+    def violations(int perFileDisplayLimit,
+                   @DelegatesTo(value = ViolationsContext, strategy = DF) Closure violationsClosure = null) {
         ViolationsContext violationsContext = new ViolationsContext()
         violationsContext.perFileDisplayLimit = perFileDisplayLimit
         ContextHelper.executeInContext(violationsClosure, violationsContext)
@@ -670,7 +677,7 @@ class PublisherContext implements Context {
         publisherNodes << publishNode
     }
 
-    def irc(@DelegatesTo(IrcContext) Closure ircClosure) {
+    def irc(@DelegatesTo(value = IrcContext, strategy = DF) Closure ircClosure) {
         IrcContext ircContext = new IrcContext()
         ContextHelper.executeInContext(ircClosure, ircContext)
 
@@ -699,7 +706,8 @@ class PublisherContext implements Context {
         publisherNodes << publishNode
     }
 
-    def cobertura(String reportFile, @DelegatesTo(CoberturaContext) Closure coberturaClosure = null) {
+    def cobertura(String reportFile,
+                  @DelegatesTo(value = CoberturaContext, strategy = DF) Closure coberturaClosure = null) {
 
         CoberturaContext coberturaContext = new CoberturaContext()
         ContextHelper.executeInContext(coberturaClosure, coberturaContext)
@@ -824,7 +832,7 @@ class PublisherContext implements Context {
      *          </tasks>
      *      </hudson.plugins.postbuildtask.PostbuildTask>
      */
-    def postBuildTask(@DelegatesTo(PostBuildTaskContext) Closure postBuildClosure) {
+    def postBuildTask(@DelegatesTo(value = PostBuildTaskContext, strategy = DF) Closure postBuildClosure) {
         PostBuildTaskContext postBuildContext = new PostBuildTaskContext()
         ContextHelper.executeInContext(postBuildClosure, postBuildContext)
 
@@ -912,7 +920,7 @@ class PublisherContext implements Context {
      *     </hudson.tasks.JavadocArchiver>
      * </publishers>
      */
-    def archiveJavadoc(@DelegatesTo(JavadocContext) Closure javadocClosure = null) {
+    def archiveJavadoc(@DelegatesTo(value = JavadocContext, strategy = DF) Closure javadocClosure = null) {
         JavadocContext javadocContext = new JavadocContext()
         ContextHelper.executeInContext(javadocClosure, javadocContext)
 
@@ -964,7 +972,7 @@ class PublisherContext implements Context {
      *         </healthReports>
      *     </hudson.plugins.emma.EmmaPublisher>
      */
-    def emma(String fileSet = '', @DelegatesTo(EmmaContext) Closure emmaClosure = null) {
+    def emma(String fileSet = '', @DelegatesTo(value = EmmaContext, strategy = DF) Closure emmaClosure = null) {
         EmmaContext emmaContext = new EmmaContext()
         ContextHelper.executeInContext(emmaClosure, emmaContext)
 
@@ -1005,10 +1013,10 @@ class PublisherContext implements Context {
      *}
      * @see https://wiki.jenkins-ci.org/display/JENKINS/Robot+Framework+Plugin
      */
-    def publishRobotFrameworkReports(@DelegatesTo(RobotFrameworkContext) Closure robotClosure = null) {
-
+    def publishRobotFrameworkReports(
+            @DelegatesTo(value = RobotFrameworkContext, strategy = DF) Closure closure = null) {
         RobotFrameworkContext context = new RobotFrameworkContext()
-        ContextHelper.executeInContext(robotClosure, context)
+        ContextHelper.executeInContext(closure, context)
 
         def nodeBuilder = NodeBuilder.newInstance()
         Node robotNode = nodeBuilder.'hudson.plugins.robot.RobotPublisher' {
@@ -1038,7 +1046,8 @@ class PublisherContext implements Context {
      *     </au.com.centrumsystems.hudson.plugin.buildpipeline.trigger.BuildPipelineTrigger>
      * </publishers>
      */
-    def buildPipelineTrigger(String downstreamProjectNames, @DelegatesTo(BuildPipelineContext) Closure closure = null) {
+    def buildPipelineTrigger(String downstreamProjectNames,
+                             @DelegatesTo(value = BuildPipelineContext, strategy = DF) Closure closure = null) {
         BuildPipelineContext buildPipelineContext = new BuildPipelineContext()
         ContextHelper.executeInContext(closure, buildPipelineContext)
 
@@ -1084,7 +1093,7 @@ class PublisherContext implements Context {
      *     </hudson.plugins.git.GitPublisher>
      * </publishers>
      */
-    def git(@DelegatesTo(GitPublisherContext) Closure gitPublisherClosure) {
+    def git(@DelegatesTo(value = GitPublisherContext, strategy = DF) Closure gitPublisherClosure) {
         GitPublisherContext context = new GitPublisherContext()
         ContextHelper.executeInContext(gitPublisherClosure, context)
 
@@ -1138,9 +1147,10 @@ class PublisherContext implements Context {
      *     </com.flowdock.jenkins.FlowdockNotifier>
      * </publishers>
      */
-    def flowdock(String token, @DelegatesTo(FlowdockPublisherContext) Closure flowdockPublisherClosure = null) {
+    def flowdock(String token,
+                 @DelegatesTo(value = FlowdockPublisherContext, strategy = DF) Closure closure = null) {
         FlowdockPublisherContext context = new FlowdockPublisherContext()
-        ContextHelper.executeInContext(flowdockPublisherClosure, context)
+        ContextHelper.executeInContext(closure, context)
 
         publisherNodes << NodeBuilder.newInstance().'com.flowdock.jenkins.FlowdockNotifier' {
             flowToken(token)
@@ -1181,10 +1191,11 @@ class PublisherContext implements Context {
         }
     }
 
-    def flowdock(String[] tokens, @DelegatesTo(FlowdockPublisherContext) Closure flowdockPublisherClosure = null) {
+    def flowdock(String[] tokens,
+                 @DelegatesTo(value = FlowdockPublisherContext, strategy = DF) Closure closure = null) {
         // Validate values
         assert tokens != null && tokens.length > 0, 'Flowdock publish requires at least one flow token'
-        flowdock(tokens.join(','), flowdockPublisherClosure)
+        flowdock(tokens.join(','), closure)
     }
 
     /**
@@ -1203,7 +1214,7 @@ class PublisherContext implements Context {
      *
      * See https://wiki.jenkins-ci.org/display/JENKINS/StashNotifier+Plugin
      */
-    def stashNotifier(@DelegatesTo(StashNotifierContext) Closure stashNotifierClosure = null) {
+    def stashNotifier(@DelegatesTo(value = StashNotifierContext, strategy = DF) Closure stashNotifierClosure = null) {
         StashNotifierContext context = new StashNotifierContext()
         ContextHelper.executeInContext(stashNotifierClosure, context)
         publisherNodes << NodeBuilder.newInstance().'org.jenkinsci.plugins.stashNotifier.StashNotifier' {
@@ -1236,7 +1247,7 @@ class PublisherContext implements Context {
      *     </publishers>
      * </org.jenkins__ci.plugins.flexible__publish.FlexiblePublisher>
      */
-    def flexiblePublish(@DelegatesTo(FlexiblePublisherContext) Closure flexiblePublishClosure) {
+    def flexiblePublish(@DelegatesTo(value = FlexiblePublisherContext, strategy = DF) Closure flexiblePublishClosure) {
         def context = new FlexiblePublisherContext(jobManagement)
         ContextHelper.executeInContext(flexiblePublishClosure, context)
 
@@ -1303,7 +1314,7 @@ class PublisherContext implements Context {
      *
      * See https://wiki.jenkins-ci.org/display/JENKINS/Workspace+Cleanup+Plugin
      */
-    def wsCleanup(@DelegatesTo(PostBuildCleanupContext) Closure closure = null) {
+    def wsCleanup(@DelegatesTo(value = PostBuildCleanupContext, strategy = DF) Closure closure = null) {
         PostBuildCleanupContext context = new PostBuildCleanupContext()
         ContextHelper.executeInContext(closure, context)
 
@@ -1332,7 +1343,8 @@ class PublisherContext implements Context {
      *     </org.jenkinsci.plugins.rundeck.RundeckNotifier>
      * </publishers>
      */
-    def rundeck(String jobIdentifier, @DelegatesTo(RundeckContext) Closure rundeckClosure = null) {
+    def rundeck(String jobIdentifier,
+                @DelegatesTo(value = RundeckContext, strategy = DF) Closure rundeckClosure = null) {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(jobIdentifier), 'jobIdentifier cannot be null or empty')
 
         RundeckContext rundeckContext = new RundeckContext()
@@ -1370,7 +1382,7 @@ class PublisherContext implements Context {
      *     </hudson.plugins.s3.S3BucketPublisher>
      * </publisher>
      */
-    def s3(String profile, @DelegatesTo(S3BucketPublisherContext) Closure s3PublisherClosure) {
+    def s3(String profile, @DelegatesTo(value = S3BucketPublisherContext, strategy = DF) Closure s3PublisherClosure) {
         checkArgument(!isNullOrEmpty(profile), 'profile must be specified')
 
         S3BucketPublisherContext context = new S3BucketPublisherContext()
@@ -1397,7 +1409,7 @@ class PublisherContext implements Context {
      * </pre>
      **/
     def findbugs(String pattern, boolean isRankActivated = false,
-                 @DelegatesTo(StaticAnalysisContext) Closure staticAnalysisClosure = null) {
+                 @DelegatesTo(value = StaticAnalysisContext, strategy = DF) Closure staticAnalysisClosure = null) {
         StaticAnalysisContext staticAnalysisContext = new StaticAnalysisContext()
         ContextHelper.executeInContext(staticAnalysisClosure, staticAnalysisContext)
 
@@ -1419,7 +1431,8 @@ class PublisherContext implements Context {
      * }
      * </pre>
      */
-    def pmd(String pattern, @DelegatesTo(StaticAnalysisContext) Closure staticAnalysisClosure = null) {
+    def pmd(String pattern,
+            @DelegatesTo(value = StaticAnalysisContext, strategy = DF) Closure staticAnalysisClosure = null) {
         publisherNodes << createDefaultStaticAnalysisNode(
                 'hudson.plugins.pmd.PmdPublisher',
                 staticAnalysisClosure,
@@ -1439,7 +1452,8 @@ class PublisherContext implements Context {
      * }
      * </pre>
      */
-    def checkstyle(String pattern, @DelegatesTo(StaticAnalysisContext) Closure staticAnalysisClosure = null) {
+    def checkstyle(String pattern,
+                   @DelegatesTo(value = StaticAnalysisContext, strategy = DF) Closure staticAnalysisClosure = null) {
         publisherNodes << createDefaultStaticAnalysisNode(
                 'hudson.plugins.checkstyle.CheckStylePublisher',
                 staticAnalysisClosure,
@@ -1459,7 +1473,8 @@ class PublisherContext implements Context {
      * }
      * </pre>
      */
-    def jshint(String pattern, @DelegatesTo(StaticAnalysisContext) Closure staticAnalysisClosure = null) {
+    def jshint(String pattern,
+               @DelegatesTo(value = StaticAnalysisContext, strategy = DF) Closure staticAnalysisClosure = null) {
         publisherNodes << createDefaultStaticAnalysisNode(
                 'hudson.plugins.jshint.CheckStylePublisher',
                 staticAnalysisClosure,
@@ -1482,7 +1497,7 @@ class PublisherContext implements Context {
      * </pre>
      */
     def dry(String pattern, highThreshold = 50, normalThreshold = 25,
-            @DelegatesTo(StaticAnalysisContext) Closure staticAnalysisClosure = null) {
+            @DelegatesTo(value = StaticAnalysisContext, strategy = DF) Closure staticAnalysisClosure = null) {
         StaticAnalysisContext staticAnalysisContext = new StaticAnalysisContext()
         ContextHelper.executeInContext(staticAnalysisClosure, staticAnalysisContext)
 
@@ -1511,7 +1526,7 @@ class PublisherContext implements Context {
      * </pre>
      */
     def tasks(String pattern, excludePattern = '', high = '', normal = '', low = '', ignoreCase = false,
-              @DelegatesTo(StaticAnalysisContext) Closure staticAnalysisClosure = null) {
+              @DelegatesTo(value = StaticAnalysisContext, strategy = DF) Closure staticAnalysisClosure = null) {
         StaticAnalysisContext staticAnalysisContext = new StaticAnalysisContext()
         ContextHelper.executeInContext(staticAnalysisClosure, staticAnalysisContext)
 
@@ -1537,7 +1552,8 @@ class PublisherContext implements Context {
      * }
      * </pre>
      */
-    def ccm(String pattern, @DelegatesTo(StaticAnalysisContext) Closure staticAnalysisClosure = null) {
+    def ccm(String pattern,
+            @DelegatesTo(value = StaticAnalysisContext, strategy = DF) Closure staticAnalysisClosure = null) {
         publisherNodes << createDefaultStaticAnalysisNode(
                 'hudson.plugins.ccm.CcmPublisher',
                 staticAnalysisClosure,
@@ -1557,7 +1573,8 @@ class PublisherContext implements Context {
      * }
      * </pre>
      */
-    def androidLint(String pattern, @DelegatesTo(StaticAnalysisContext) Closure staticAnalysisClosure = null) {
+    def androidLint(String pattern,
+                    @DelegatesTo(value = StaticAnalysisContext, strategy = DF) Closure staticAnalysisClosure = null) {
         publisherNodes << createDefaultStaticAnalysisNode(
                 'org.jenkinsci.plugins.android__lint.LintPublisher',
                 staticAnalysisClosure,
@@ -1577,10 +1594,11 @@ class PublisherContext implements Context {
      * }
      * </pre>
      */
-    def dependencyCheck(String pattern, @DelegatesTo(StaticAnalysisContext) Closure staticAnalysisClosure = null) {
+    def dependencyCheck(String pattern,
+                        @DelegatesTo(value = StaticAnalysisContext, strategy = DF) Closure closure = null) {
         publisherNodes << createDefaultStaticAnalysisNode(
                 'org.jenkinsci.plugins.DependencyCheck.DependencyCheckPublisher',
-                staticAnalysisClosure,
+                closure,
                 pattern
         )
     }
@@ -1610,7 +1628,7 @@ class PublisherContext implements Context {
      * </pre>
      */
     def warnings(List consoleParsers, Map parserConfigurations = [:],
-                 @DelegatesTo(WarningsContext) Closure warningsClosure = null) {
+                 @DelegatesTo(value = WarningsContext, strategy = DF) Closure warningsClosure = null) {
         jobManagement.requireMinimumPluginVersion('warnings', '4.0')
         WarningsContext warningsContext = new WarningsContext()
         ContextHelper.executeInContext(warningsClosure,  warningsContext)
@@ -1671,9 +1689,9 @@ class PublisherContext implements Context {
      *     <isWarningsDeactivated>true</isWarningsDeactivated>
      * </hudson.plugins.analysis.collector.AnalysisPublisher>
      */
-    def analysisCollector(@DelegatesTo(AnalysisCollectorContext) Closure analysisCollectorClosure = null) {
+    def analysisCollector(@DelegatesTo(value = AnalysisCollectorContext, strategy = DF) Closure closure = null) {
         AnalysisCollectorContext analysisCollectorContext = new AnalysisCollectorContext()
-        ContextHelper.executeInContext(analysisCollectorClosure,  analysisCollectorContext)
+        ContextHelper.executeInContext(closure,  analysisCollectorContext)
 
         def nodeBuilder = NodeBuilder.newInstance()
         publisherNodes << nodeBuilder.'hudson.plugins.analysis.collector.AnalysisPublisher' {

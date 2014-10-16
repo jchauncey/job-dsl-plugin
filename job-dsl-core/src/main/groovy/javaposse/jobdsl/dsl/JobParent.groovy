@@ -7,6 +7,8 @@ import com.google.common.collect.Sets
 import java.util.logging.Level
 import java.util.logging.Logger
 
+import static groovy.lang.Closure.DELEGATE_FIRST
+
 abstract class JobParent extends Script implements DslFactory {
     private static final Logger LOGGER = Logger.getLogger(JobParent.name)
 
@@ -24,7 +26,7 @@ abstract class JobParent extends Script implements DslFactory {
     }
 
     @Override
-    Job job(Map<String, Object> arguments=[:], @DelegatesTo(Job) Closure closure) {
+    Job job(Map<String, Object> arguments = [:], @DelegatesTo(value = Job, strategy = DELEGATE_FIRST) Closure closure) {
         LOGGER.log(Level.FINE, "Got closure and have ${jm}")
         Job job = new Job(jm, arguments)
 
@@ -39,7 +41,8 @@ abstract class JobParent extends Script implements DslFactory {
     }
 
     @Override
-    View view(Map<String, Object> arguments=[:], @DelegatesTo(View) Closure closure) {
+    View view(Map<String, Object> arguments = [:],
+              @DelegatesTo(value = View, strategy = DELEGATE_FIRST) Closure closure) {
         ViewType viewType = arguments['type'] as ViewType ?: ViewType.ListView
         View view = viewType.viewClass.newInstance()
         view.with(closure)
@@ -50,7 +53,7 @@ abstract class JobParent extends Script implements DslFactory {
     }
 
     @Override
-    Folder folder(@DelegatesTo(Folder) Closure closure) {
+    Folder folder(@DelegatesTo(value = Folder, strategy = DELEGATE_FIRST) Closure closure) {
         Folder folder = new Folder()
         folder.with(closure)
         referencedJobs << folder
@@ -58,7 +61,8 @@ abstract class JobParent extends Script implements DslFactory {
     }
 
     @Override
-    ConfigFile configFile(Map<String, Object> arguments=[:], @DelegatesTo(ConfigFile) Closure closure) {
+    ConfigFile configFile(Map<String, Object> arguments = [:],
+                          @DelegatesTo(value = ConfigFile, strategy = DELEGATE_FIRST) Closure closure) {
         ConfigFileType configFileType = arguments['type'] as ConfigFileType ?: ConfigFileType.Custom
         ConfigFile configFile = configFileType.configFileClass.newInstance(configFileType)
         configFile.with(closure)
